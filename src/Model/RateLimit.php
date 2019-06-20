@@ -23,17 +23,17 @@ class RateLimit extends ModelAbstract
     protected $method;
 
     /**
-     * @int
+     * @var int
      */
     protected $limits;
 
     /**
-     * @int
+     * @var int
      */
     protected $remaining;
 
     /**
-     * @int
+     * @var int
      */
     protected $reset;
 

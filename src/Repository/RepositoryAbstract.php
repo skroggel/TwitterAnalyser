@@ -139,12 +139,13 @@ abstract class RepositoryAbstract
                 throw new RepositoryException($error[2]);
             }
         }
+
+        return false;
     }
 
 
     /**
      * @param \Madj2k\TwitterAnalyser\Model\ModelAbstract $model
-     * @param bool $isUpdate
      * @return array
      */
     protected function getPropertiesOfModel (\Madj2k\TwitterAnalyser\Model\ModelAbstract $model)
@@ -154,7 +155,7 @@ abstract class RepositoryAbstract
         $allMethods = get_class_methods ($model);
         foreach ($allMethods as $method) {
             if (strpos($method, 'get') === 0) {
-                $property = GeneralUtility::decamelize(substr($method, 3));
+                $property = GeneralUtility::camelCaseToUnderscore(substr($method, 3));
                 $properties[$property] = $model->$method();
             }
         }

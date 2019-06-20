@@ -2,7 +2,7 @@
 namespace Madj2k\TwitterAnalyser\Utility;
 
 /**
- * RateLimit
+ * General Utility
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright Steffen Kroggel 2019
@@ -34,7 +34,7 @@ class GeneralUtility
      * @return string
      * @see https://stackoverflow.com/questions/1993721/how-to-convert-pascalcase-to-pascal-case/35719689#35719689
      */
-    static public function decamelize($string)
+    static public function camelCaseToUnderscore($string)
     {
         return strtolower(preg_replace(['/([a-z\d])([A-Z])/', '/([^_])([A-Z][a-z])/'], '$1_$2', $string));
     }
@@ -57,7 +57,7 @@ class GeneralUtility
     static public function getTableNameFromRepository(\Madj2k\TwitterAnalyser\Repository\RepositoryAbstract $repository)
     {
         $className = (new \ReflectionClass($repository))->getShortName();
-        return self::decamelize(str_replace('Repository' , '', $className));
+        return self::camelCaseToUnderscore(str_replace('Repository' , '', $className));
     }
 
 }

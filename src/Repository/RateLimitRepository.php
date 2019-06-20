@@ -3,7 +3,7 @@ namespace Madj2k\TwitterAnalyser\Repository;
 
 
 /**
- * RepositoryAbstract
+ * RateLimitRepository
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright Steffen Kroggel 2019
@@ -30,9 +30,7 @@ class RateLimitRepository extends RepositoryAbstract
         $sth = $this->pdo->prepare($sql);
         if ($sth->execute(array($type, $method))) {
             if ($resultDb = $sth->fetch(\PDO::FETCH_ASSOC)) {
-
                 return new $this->model($resultDb);
-                //===
             };
 
         } else {

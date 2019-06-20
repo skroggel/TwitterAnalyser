@@ -1,10 +1,16 @@
 <?php
-
-
 namespace Madj2k\TwitterAnalyser;
-
 use \Madj2k\TwitterAnalyser\Model\RateLimit;
 
+
+/**
+ * TwitterAnalyser
+ *
+ * @author Steffen Kroggel <developer@steffenkroggel.de>
+ * @copyright Steffen Kroggel 2019
+ * @package Madj2k_TwitterAnalyser
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
+ */
 class TwitterAnalyser
 {
 
@@ -24,6 +30,11 @@ class TwitterAnalyser
      */
     protected $rateLimitRepository;
 
+    /**
+     * @var \Madj2k\TwitterAnalyser\Utility\LogUtility
+     */
+    protected $logUtility;
+
 
     /**
      * @var array
@@ -33,6 +44,9 @@ class TwitterAnalyser
 
     /**
      * Constructor
+     *
+     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \ReflectionException
      */
     public function __construct()
     {
@@ -42,6 +56,7 @@ class TwitterAnalyser
 
         // set defaults
         $this->rateLimitRepository = new \Madj2k\TwitterAnalyser\Repository\RateLimitRepository();
+        $this->logUtility = new  \Madj2k\TwitterAnalyser\Utility\LogUtility();
 
         // init Twitter API
         $this->twitter = new \TwitterAPIExchange($this->settings['twitter']);
@@ -61,9 +76,9 @@ class TwitterAnalyser
 
         /** @var \Madj2k\TwitterAnalyser\Model\RateLimit $rateLimit */
         if ($rateLimit = $this->rateLimitRepository->findOneByTypeAndMethod($type, $method)) {
-            // $this->log(self::LOG_DEBUG, 'Fetched rate limit from database');
+            $this->logUtility->log(self::LOG_DEBUG, 'Fetched rate limit from database');
             if ($rateLimit->getReset() > time()) {
-           //     return $rateLimit;
+                return $rateLimit;
                 //===
             }
         };
@@ -79,8 +94,7 @@ class TwitterAnalyser
                 ->buildOauth($url, 'GET')
                 ->performRequest()
             );
-            // $this->log(self::LOG_DEBUG, 'Fetched rate limit from API');
-
+            $this->logUtility->log(self::LOG_DEBUG, 'Fetched rate limit from API');
 
             if (
                 ($resultJson)
@@ -97,18 +111,20 @@ class TwitterAnalyser
 
                     $this->rateLimitRepository->insert($rateLimit);
                 } else {
+                    $rateLimit->setLimits($object->limit);
+                    $rateLimit->setRemaining($object->remaining);
+                    $rateLimit->setReset($object->reset);
+                    
                     $this->rateLimitRepository->update($rateLimit);
                 }
 
-                //$this->log(self::LOG_DEBUG, 'Saved rate limit in database');
-
+                $this->logUtility->log(self::LOG_DEBUG, 'Saved rate limit in database');
                 return $rateLimit;
                 //===
             }
 
         } catch (\Exception $e) {
-           // $this->log(self::LOG_ERROR,$e->getMessage());
-            var_dump($e->getMessage());
+            $this->logUtility->log(self::LOG_ERROR, $e->getMessage());
         }
 
         return null;
@@ -137,25 +153,6 @@ class TwitterAnalyser
     }
 
 
-    /**
-     * Logs actions
-     *
-     * @param $level
-     * @param $comment
-     * @param $apiCall
-     */
-    protected function log ($level = LOG_DEBUG, $comment = '', $apiCall = '')
-    {
-        if (! in_array($level, range(0,4))){
-            $level = self::LOG_DEBUG;
-        }
 
-        $dbt = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS,2);
-        $method = isset($dbt[1]['function']) ? $dbt[1]['function'] : null;
-
-        $statement = $this->pdo->prepare('INSERT INTO log (level, method, api_call, comment) VALUES (?, ?, ?, ?)');
-        $statement->execute(array($level, $method, $apiCall, $comment));
-
-    }
 
 }

@@ -30,6 +30,7 @@ abstract class ModelAbstract
      */
     protected $changeTimestamp;
 
+
     /**
      * @var array
      */
@@ -41,7 +42,7 @@ abstract class ModelAbstract
      *
      * @param array|object $data
      */
-    public function __construct($data)
+    public function __construct($data = [])
     {
         // set defaults
         $this->changeTimestamp = $this->createTimestamp = time();
@@ -51,7 +52,10 @@ abstract class ModelAbstract
         }
 
         // set given data to model properties
-        if (is_array($data)) {
+        if (
+            (is_array($data))
+            && (count($data) > 0)
+        ) {
             foreach ($data as $key => $value) {
                 $setter = 'set' . GeneralUtility::underscoreToCamelCase($key, true);
                 if (method_exists($this, $setter)) {
