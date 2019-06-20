@@ -1,0 +1,33 @@
+{
+    "name": "madj2k/twitter-analyser",
+    "description": "Analyser for Twitter conversations",
+    "license": "GPL-2.0+",
+    "require": {
+        "php": "~7.2",
+        "ext-curl": "*",
+        "ext-pdo": "*",
+        "ext-json": "*",
+        "j7mbo/twitter-api-php" : "*"
+    },
+    "require-dev": {
+
+    },
+    "scripts": {
+
+    },
+    "extra": {
+
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "platform": {
+            "php": "7.2"
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Madj2k\\TwitterAnalyser\\": "src"
+        }
+    }
+}
