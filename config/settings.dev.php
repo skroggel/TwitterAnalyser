@@ -13,5 +13,7 @@ $SETTINGS = [
         'consumer_key' => '',
         'consumer_secret' => '',
     ],
+    'log_level' => 1,
+    'max_fetch' => 10
 
 ];

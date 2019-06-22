@@ -77,18 +77,21 @@ class LogUtility
             $level = self::LOG_DEBUG;
         }
 
-        $dbt = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS,2);
-        $method = isset($dbt[1]['function']) ? $dbt[1]['function'] : null;
-        $class = isset($dbt[1]['class']) ? $dbt[1]['class'] : null;
+        if (intval($this->settings['log_level']) <= $level) {
 
-        /** @var \Madj2k\TwitterAnalyser\Model\Log $log */
-        $log = new \Madj2k\TwitterAnalyser\Model\Log();
-        $log->setLevel($level)
-            ->setClass($class)
-            ->setMethod($method)
-            ->setComment($comment)
-            ->setApiCall($apiCall);
+            $dbt = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS,2);
+            $method = isset($dbt[1]['function']) ? $dbt[1]['function'] : null;
+            $class = isset($dbt[1]['class']) ? $dbt[1]['class'] : null;
 
-        $this->logRepository->insert($log);
+            /** @var \Madj2k\TwitterAnalyser\Model\Log $log */
+            $log = new \Madj2k\TwitterAnalyser\Model\Log();
+            $log->setLevel($level)
+                ->setClass($class)
+                ->setMethod($method)
+                ->setComment($comment)
+                ->setApiCall($apiCall);
+
+            $this->logRepository->insert($log);
+        }
     }
 }

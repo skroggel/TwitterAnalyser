@@ -16,27 +16,21 @@ class RateLimitRepository extends RepositoryAbstract
 
 
     /**
+     * Find one by method and category
      *
-     * @param string $type
+     * @param string $category
      * @param string $method
-     * @return \Madj2k\TwitterAnalyser\Model\RateLimit
+     * @return \Madj2k\TwitterAnalyser\Model\RateLimit|null
      * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
      */
-    public function findOneByTypeAndMethod ($type, $method)
+    public function findOneByCategoryAndMethod (string $category, string $method)
     {
 
-        $sql = 'SELECT * FROM ' . $this->table . ' WHERE type = ? AND method = ? ORDER BY reset DESC LIMIT 1';
+        $sql = 'SELECT * FROM ' . $this->table . ' WHERE category = ? AND method = ? ORDER BY reset DESC';
 
-        $sth = $this->pdo->prepare($sql);
-        if ($sth->execute(array($type, $method))) {
-            if ($resultDb = $sth->fetch(\PDO::FETCH_ASSOC)) {
-                return new $this->model($resultDb);
-            };
-
-        } else {
-            throw new RepositoryException($sth->errorInfo()[2]);
-        }
-
+        /** @var \Madj2k\TwitterAnalyser\Model\RateLimit $result */
+        $result = $this->_findOne($sql, [$category, $method]);
+        return $result;
 
     }
 

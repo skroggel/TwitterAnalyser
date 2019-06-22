@@ -15,27 +15,27 @@ class Log extends ModelAbstract
     /**
      * @var int
      */
-    protected $level;
+    protected $level = 0;
 
     /**
      * @var string
      */
-    protected $class;
+    protected $class = '';
     
     /**
      * @var string
      */
-    protected $method;
+    protected $method = '';
 
     /**
      * @var string
      */
-    protected $apiCall;
+    protected $apiCall = '';
 
     /**
      * @var string
      */
-    protected $comment;
+    protected $comment = '';
 
     
     /**
@@ -57,10 +57,6 @@ class Log extends ModelAbstract
      */
     public function setLevel($level)
     {
-        if (! in_array($level, range(0,4))){
-            $level = self::LOG_DEBUG;
-        }
-
         $this->level = intval($level);
         return $this;
     }

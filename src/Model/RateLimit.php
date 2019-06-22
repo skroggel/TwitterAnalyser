@@ -15,27 +15,27 @@ class RateLimit extends ModelAbstract
     /**
      * @var string
      */
-    protected $type;
+    protected $category = '';
 
     /**
      * @var string
      */
-    protected $method;
+    protected $method = '';
 
     /**
      * @var int
      */
-    protected $limits;
+    protected $limits = 0;
 
     /**
      * @var int
      */
-    protected $remaining;
+    protected $remaining = 0;
 
     /**
      * @var int
      */
-    protected $reset;
+    protected $reset = 0;
 
 
     /**
@@ -47,25 +47,25 @@ class RateLimit extends ModelAbstract
 
 
     /**
-     * Gets type
+     * Gets category
      *
      * @return string
      */
-    public function getType()
+    public function getCategory()
     {
-        return $this->type;
+        return $this->category;
     }
 
 
     /**
-     * Sets type
+     * Sets category
      *
-     * @param string $type
+     * @param string $category
      * @return $this
      */
-    public function setType($type)
+    public function setCategory($category)
     {
-        $this->type = $type;
+        $this->category = $category;
         return $this;
     }
 
