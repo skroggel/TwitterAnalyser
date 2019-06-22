@@ -251,7 +251,10 @@ class Tweet extends ModelAbstract
      */
     public function setCreatedAt($createdAt)
     {
-        $this->createdAt = strtotime($createdAt);
+        if (! is_numeric($createdAt)) {
+            $createdAt = strtotime($createdAt);
+        }
+        $this->createdAt = $createdAt;
         return $this;
     }
 
