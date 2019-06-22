@@ -17,6 +17,8 @@ bower_components
 /.php-version
 /vendor
 
+/*.lock
+
 /web/.htaccess
 /web/.htpasswd
 /web/gitpull.php
@@ -24,3 +26,4 @@ bower_components
 
 /config/settings.php
 /dev/*.sql
+

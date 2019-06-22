@@ -2,8 +2,8 @@
 <?php
 
 // error_reporting(E_ALL);
-require_once('../config/settings.php');
-require_once('../vendor/autoload.php');
+require_once(__DIR__ . '/../config/settings.php');
+require_once(__DIR__ . '/../vendor/autoload.php');
 
 
 $accountRepository = new \Madj2k\TwitterAnalyser\Repository\AccountRepository();

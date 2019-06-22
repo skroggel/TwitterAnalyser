@@ -112,7 +112,7 @@ class TwitterAnalyser
 
                 $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Fetched timeline tweets for %s account(s). Remaining rate limit is %s.', count($accounts), $rateLimit->getRemaining()));
             } else {
-                $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('No timeline tweets fetch. Rate limit reached.'));
+                $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('No timeline tweets fetched. Rate limit reached or no accounts available.'));
             }
         }
 
@@ -140,7 +140,7 @@ class TwitterAnalyser
 
                 $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Fetched addressed-to tweets for %s account(s). Remaining rate limit is %s.', count($accounts), $rateLimit->getRemaining()));
             } else {
-                $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('No addressed-to tweets fetch. Rate limit reached.'));
+                $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('No addressed-to tweets fetched. Rate limit reached or no accounts available.'));
             }
         }
         
@@ -224,7 +224,7 @@ class TwitterAnalyser
 
         $url = 'https://api.twitter.com/1.1/search/tweets.json';
         $constraints = [
-            'q=' . $account->getUserName(),
+            'q=to:' . $account->getUserName(),
             'result_type=recent',
             'count=100',
             'tweet_mode=extended',
