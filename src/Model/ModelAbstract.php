@@ -50,6 +50,18 @@ abstract class ModelAbstract
      */
     public function __construct($data = [])
     {
+        $this->_injectData($data);
+    }
+
+
+    /**
+     * init data
+     *
+     * @param array|object $data
+     * @param bool $initialValues
+     */
+    public function _injectData($data = [], $initialValues = true)
+    {
 
         // get properties and their initial values
         $existingProperties = get_object_vars($this);
@@ -57,7 +69,9 @@ abstract class ModelAbstract
             if (strpos($existingProperty, '_') === 0) {
                 continue;
             }
-            $this->_initProperties[$existingProperty] = $initialValue;
+            if ($initialValues) {
+                $this->_initProperties[$existingProperty] = $initialValue;
+            }
         }
 
         // get data from given objects
@@ -75,7 +89,9 @@ abstract class ModelAbstract
                 $setter = 'set' . ucfirst($property);
                 if (method_exists($this, $setter)) {
                     $this->$setter($value);
-                    $this->_initProperties[$property] = $this->{$property};
+                    if ($initialValues) {
+                        $this->_initProperties[$property] = $this->{$property};
+                    }
                 }
             }
 
@@ -90,7 +106,9 @@ abstract class ModelAbstract
                         && (method_exists($this, $setter))
                     ){
                         $this->$setter($data[$source]);
-                        $this->_initProperties[$property] = $this->{$property};
+                        if ($initialValues) {
+                            $this->_initProperties[$property] = $this->{$property};
+                        }
                     }
                 }
             }

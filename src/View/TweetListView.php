@@ -47,22 +47,24 @@ class TweetListView
      * Renders tweets
      *
      * @param \Madj2k\TwitterAnalyser\Model\Account $account
+     * @param int $fromTime
+     * @param int $toTime
      * @return string
      * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
      */
-    public function render (\Madj2k\TwitterAnalyser\Model\Account $account)
+    public function render (\Madj2k\TwitterAnalyser\Model\Account $account, int $fromTime = 0, int $toTime = 0)
     {
+        $html = '';
+        if ($tweets = $this->tweetRepository->findAllByAccountAndTypeAndTimeOrderedByCreateAt($account, 'timeline', $fromTime, $toTime)) {
 
-        if ($tweets = $this->tweetRepository->findAllByAccountAndTypeOrderedByCreateAt($account)) {
-
-            $html = '<ul class="tweet-list" >';
+            $html = '<ol class="tweet-list" >';
 
             /** @var \Madj2k\TwitterAnalyser\Model\Tweet $tweet */
             foreach ($tweets as $tweet) {
                 $html .= $this->renderSub($tweet);
             }
 
-            $html .= '</ul>';
+            $html .= '</ol>';
         }
 
         return $html;
@@ -85,17 +87,16 @@ class TweetListView
 
         if ($subTweets = $this->tweetRepository->findAllByInReplyToTweetIdAndTypeOrderedByCreateAt($tweet->getTweetId(), 'searchTo')) {
 
-            $html .= '<ul class="tweet-sublist" >';
+            $html .= '<ol class="tweet-sublist" >';
 
             /** @var \Madj2k\TwitterAnalyser\Model\Tweet $tweet */
             foreach ($subTweets as $subTweet) {
                 $html .= $this->renderSub($subTweet);
             }
 
-            $html .= '</ul>';
+            $html .= '</ol>';
         }
         $html .= '</li>';
-
 
         return $html;
     }

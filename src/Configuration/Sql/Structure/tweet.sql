@@ -21,5 +21,9 @@ CREATE TABLE IF NOT EXISTS `tweet` (
   `retweet_count` int(11) NOT NULL DEFAULT '0',
   `favorite_count` int(11) NOT NULL DEFAULT '0',
 
-  PRIMARY KEY (uid)
+  PRIMARY KEY (uid),
+  KEY `account_type` (`account`,`type`),
+  KEY `tweet_id_type` (`tweet_id`,`type`),
+  KEY `created_at` (`created_at`),
+  KEY `in_reply_type` (`in_reply_to_tweet_id`, `type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

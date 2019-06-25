@@ -4,9 +4,12 @@ CREATE TABLE IF NOT EXISTS `log` (
   `change_timestamp` int(11) NOT NULL DEFAULT '0',
 
   `level` tinyint NOT NULL DEFAULT '0',
-  `class` varchar(255) NOT NULL,
-  `method` varchar(255) NOT NULL,
+  `class` varchar(255) DEFAULT NULL,
+  `method` varchar(255) DEFAULT NULL,
   `api_call` text,
   `comment` text,
-  PRIMARY KEY (uid)
+
+  PRIMARY KEY (uid),
+  KEY `level` (`level`),
+  KEY `create_timestamp` (`create_timestamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

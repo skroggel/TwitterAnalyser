@@ -21,6 +21,12 @@ class TweetImportUtility
 
 
     /**
+     * @var \Madj2k\TwitterAnalyser\Repository\AccountRepository
+     */
+    protected $accountRepository;
+
+
+    /**
      * @var \Madj2k\TwitterAnalyser\Utility\LogUtility
      */
     protected $logUtility;
@@ -45,6 +51,7 @@ class TweetImportUtility
 
         // set defaults
         $this->tweetRepository = new \Madj2k\TwitterAnalyser\Repository\TweetRepository();
+        $this->accountRepository = new \Madj2k\TwitterAnalyser\Repository\AccountRepository();
         $this->logUtility = new  \Madj2k\TwitterAnalyser\Utility\LogUtility();
 
 
@@ -71,6 +78,13 @@ class TweetImportUtility
         if ($object->user) {
             $tweet->setUserId($object->user->id);
             $tweet->setUserName($object->user->screen_name);
+
+            // if $type is 'timeline' we also update the given account
+            if ($type == 'timeline') {
+                $account->_injectData($object->user, false);
+                $this->accountRepository->update($account);
+                $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Updated account info for user %s in database.', $account->getUserName()));
+            }
         }
 
         if ($object->entities) {
@@ -128,11 +142,11 @@ class TweetImportUtility
             && ($tweet->getFullText())
         ){
             $this->tweetRepository->insert($tweet);
-            $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Imported Tweet with id = %s for user = %s into database.', $tweet->getTweetId(), $account->getUserName()));
+            $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Imported tweet with id = %s for user %s into database.', $tweet->getTweetId(), $account->getUserName()));
             return true;
         }
 
-        $this->logUtility->log($this->logUtility::LOG_ERROR, sprintf('Could not import given Tweet for user = %s into database.', $account->getUserName()));
+        $this->logUtility->log($this->logUtility::LOG_ERROR, sprintf('Could not import given tweet for user %s into database.', $account->getUserName()));
         return false;
     }
 }

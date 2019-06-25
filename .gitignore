@@ -5,6 +5,7 @@
 .DS_Store
 node_modules
 bower_components
+*.lock
 
 /.build
 /.buildpath
@@ -16,8 +17,6 @@ bower_components
 /.project
 /.php-version
 /vendor
-
-/*.lock
 
 /web/.htaccess
 /web/.htpasswd

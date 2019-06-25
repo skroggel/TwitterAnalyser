@@ -82,7 +82,7 @@ class TwitterAnalyser
     /**
      * Get timeline tweets of user
      *
-     * return void
+     * @return void
      * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
      */
     public function fetchTweets()
@@ -143,7 +143,6 @@ class TwitterAnalyser
                 $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('No addressed-to tweets fetched. Rate limit reached or no accounts available.'));
             }
         }
-        
     }
 
 
@@ -178,7 +177,6 @@ class TwitterAnalyser
                     ->performRequest()
             );
             $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Fetched tweets for user %s', $account->getUserName()), $url . $this->twitter->getGetfield());
-
 
             if (
                 ($tweets)

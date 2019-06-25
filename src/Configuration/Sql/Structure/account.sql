@@ -1,0 +1,27 @@
+CREATE TABLE IF NOT EXISTS `account` (
+  `uid` int(11) NOT NULL,
+  `create_timestamp` int(11) NOT NULL DEFAULT '0',
+  `change_timestamp` int(11) NOT NULL DEFAULT '0',
+  `user_id` bigint(20) NOT NULL DEFAULT '0',
+  `user_name` varchar(255) NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `location` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `url` varchar(255) DEFAULT NULL,
+  `created_at` int(11) NOT NULL DEFAULT '0',
+  `verified` tinyint(1) NOT NULL DEFAULT '0',
+  `followers_count` int(11) NOT NULL DEFAULT '0',
+  `friends_count` int(11) NOT NULL DEFAULT '0',
+  `listed_count` int(11) NOT NULL DEFAULT '0',
+  `favorites_count` int(11) NOT NULL DEFAULT '0',
+  `statuses_count` int(11) NOT NULL DEFAULT '0',
+  `fetch_timeline_timestamp` int(11) NOT NULL DEFAULT '0',
+  `fetch_addressed_timestamp` int(11) NOT NULL DEFAULT '0'
+
+  PRIMARY KEY (uid),
+  UNIQUE KEY `user_name` (`user_name`),
+  KEY `fetch_timeline_timestamp` (`fetch_timeline_timestamp`),
+  KEY `fetch_addressed_timestamp` (`fetch_addressed_timestamp`),
+  KEY `created_at` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+

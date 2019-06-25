@@ -3,7 +3,7 @@ namespace Madj2k\TwitterAnalyser\Repository;
 
 
 /**
- * LogRepository
+ * UrlRepository
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright Steffen Kroggel 2019
@@ -11,23 +11,23 @@ namespace Madj2k\TwitterAnalyser\Repository;
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
 
-class LogRepository extends RepositoryAbstract
+class UrlRepository extends RepositoryAbstract
 {
 
     /**
-     * Find all by level and time
+     * Get Urls by processed status
      *
-     * @param int $level
-     * @param int $maxTime
+     * @param int $processed
+     * @param int $limit
      * @return array|null
      * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
      */
-    public function findAllByLevelAndTime (int $level, int $maxTime = 0)
+    public function findByProcessed($processed = 0, $limit = 10)
     {
 
-        $sql = 'SELECT * FROM ' . $this->table . ' WHERE level >= ? AND create_timestamp >= ? ORDER BY create_timestamp ASC';
+        $sql = 'SELECT * FROM ' . $this->table . ' WHERE processed = ? LIMIT ' . intval($limit);
 
-        $result = $this->_findAll($sql, [$level, $maxTime]);
+        $result = $this->_findAll($sql, [$processed]);
         return $result;
     }
 
