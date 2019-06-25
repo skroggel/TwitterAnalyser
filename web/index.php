@@ -13,7 +13,10 @@
         <title>TwitterAnalyser</title>
 
         <style type="text/css">
-            .tweet__header { font-weight:bold; }
+            .tweet { padding-top:1em;}
+            .tweet__header { font-weight:bold; display:block;}
+            .tweet__body,
+            .tweet__media { display:block;}
         </style>
     </head>
     <body>

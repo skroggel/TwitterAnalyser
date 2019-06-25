@@ -82,8 +82,14 @@ class TweetListView
     {
 
         $html = '<li class="tweet" data-tweet-id="' . $tweet->getTweetId() . '">';
-        $html .= '<span class="tweet__header">' . $tweet->getUserName() . ' (' . date('d.m.y H:i', $tweet->getCreatedAt()) . ') RTs: ' . $tweet->getRetweetCount() . ', FAVs: ' . $tweet->getFavoriteCount() . '</span><br>';
+        $html .= '<span class="tweet__header">' . $tweet->getUserName() . ' (' . date('d.m.y H:i', $tweet->getCreatedAt()) . ') RTs: ' . $tweet->getRetweetCount() . ', FAVs: ' . $tweet->getFavoriteCount() . '</span>';
         $html .= '<span class="tweet__body">' . $tweet->getFullText() . '<span>';
+
+        if ($tweet->getMedia()) {
+            foreach(explode('|', $tweet->getMedia()) as $medium) {
+                $html .= '<span class="tweet__media"><a href="' . preg_replace('#\[.+\]#', '', $medium) . '" target="_blank">' . $medium . '</a><span>';
+            }
+        }
 
         if ($subTweets = $this->tweetRepository->findAllByInReplyToTweetIdAndTypeOrderedByCreateAt($tweet->getTweetId(), 'searchTo')) {
 
