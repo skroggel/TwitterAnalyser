@@ -13,6 +13,11 @@ $SETTINGS = [
         'consumer_key' => '',
         'consumer_secret' => '',
     ],
+    'report' => [
+        'log_level' => 1,
+        'max_time' => 86400,
+        'email' => 'admin@madj2k.de'
+    ],
     'log_level' => 1,
     'max_fetch' => 10
 

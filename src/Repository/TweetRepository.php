@@ -15,37 +15,28 @@ class TweetRepository extends RepositoryAbstract
 {
 
 
-    /**
-     * Get latest tweet of user
-     *
-     * @param \Madj2k\TwitterAnalyser\Model\Account $account
-     * @param string $type
-     * @return \Madj2k\TwitterAnalyser\Model\Tweet|null
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
-
-    public function findLastByAccountAndType(\Madj2k\TwitterAnalyser\Model\Account $account, string $type)
-    {
-
-        $sql = 'SELECT * FROM ' . $this->table . ' WHERE account = ? AND type = ? ORDER BY tweet_id DESC';
-
-        /** @var \Madj2k\TwitterAnalyser\Model\Tweet $result
-        $result = $this->_findOne($sql, array($account->getUid(), $type));
-        return $result;
-    }*/
-
-
-    /**
+     /**
      * Get tweets by account and type
      *
      * @param \Madj2k\TwitterAnalyser\Model\Account $account
      * @param string $type
+     * @param int $fromTime
+     * @param int $toTime
      * @return array|null
      * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
      */
-    public function findAllByAccountAndTypeOrderedByCreateAt(\Madj2k\TwitterAnalyser\Model\Account $account, $type = 'timeline')
+    public function findAllByAccountAndTypeAndTimeOrderedByCreateAt(\Madj2k\TwitterAnalyser\Model\Account $account, string $type = 'timeline', int $fromTime = 0, int $toTime = 0)
     {
 
-        $sql = 'SELECT * FROM ' . $this->table . ' WHERE account = ? AND type = ? ORDER BY created_at DESC';
+        $timeWhere = '';
+        if ($fromTime) {
+            $timeWhere = ' AND created_at >= ' . intval($fromTime) . ' ';
+        }
+        if ($toTime) {
+            $timeWhere .= ' AND created_at <= ' . intval($toTime) . ' ';
+        }
+
+        $sql = 'SELECT * FROM ' . $this->table . ' WHERE account = ? AND type = ? ' . $timeWhere . ' ORDER BY created_at DESC';
 
         $result = $this->_findAll($sql, [$account->getUid(), $type]);
         return $result;

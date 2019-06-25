@@ -40,18 +40,24 @@ class LogUtility
 
 
     /**
+     * @var bool
+     */
+    protected $echoMessages = false;
+
+
+    /**
      * @var array
      */
-    protected $settings;
+    protected $settings = [];
 
 
     /**
      * Constructor
      *
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @param bool $echoMessages
      * @throws \ReflectionException
      */
-    public function __construct()
+    public function __construct($echoMessages = false)
     {
 
         global $SETTINGS;
@@ -59,7 +65,7 @@ class LogUtility
 
         // set defaults
         $this->logRepository = new \Madj2k\TwitterAnalyser\Repository\LogRepository();
-
+        $this->echoMessages = boolval($echoMessages);
     }
 
 
@@ -67,11 +73,11 @@ class LogUtility
      * Logs actions
      *
      * @param $level
-     * @param $comment
+     * @param $message
      * @param $apiCall
      * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
      */
-    public function log ($level = LOG_DEBUG, $comment = '', $apiCall = '')
+    public function log ($level = LOG_DEBUG, $message = '', $apiCall = '')
     {
         if (! in_array($level, range(0,4))){
             $level = self::LOG_DEBUG;
@@ -81,17 +87,21 @@ class LogUtility
 
             $dbt = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS,2);
             $method = isset($dbt[1]['function']) ? $dbt[1]['function'] : null;
-            $class = isset($dbt[1]['class']) ? $dbt[1]['class'] : null;
+            $class = isset($dbt[1]['class']) ? $dbt[1]['class'] : (isset($dbt[0]['file']) ? $dbt[0]['file'] : null);
 
             /** @var \Madj2k\TwitterAnalyser\Model\Log $log */
             $log = new \Madj2k\TwitterAnalyser\Model\Log();
             $log->setLevel($level)
                 ->setClass($class)
                 ->setMethod($method)
-                ->setComment($comment)
+                ->setComment($message)
                 ->setApiCall($apiCall);
 
             $this->logRepository->insert($log);
+
+            if ($this->echoMessages) {
+                echo $message . "\n";
+            }
         }
     }
 }

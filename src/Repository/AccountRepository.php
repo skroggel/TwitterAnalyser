@@ -15,20 +15,28 @@ class AccountRepository extends RepositoryAbstract
 {
 
     /**
-     * Find one by type and method
+     * Find one by uid and time
      *
-     * @param string $type
-     * @param string $method
+     * @param int $uid
+     * @param int $fromTime
+     * @param int $toTime
      * @return \Madj2k\TwitterAnalyser\Model\Account|null
      * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
      */
-    public function findOneByTypeAndMethod (string $type, string $method)
+    public function findOneByUidAndTime (int $uid, int $fromTime = 0, int $toTime = 0)
     {
+        $timeWhere = '';
+        if ($fromTime) {
+            $timeWhere = 'AND created_at >= ' . intval($fromTime);
+        }
+        if ($toTime ) {
+            $timeWhere = 'AND created_at <= ' . intval($toTime);
+        }
 
-        $sql = 'SELECT * FROM ' . $this->table . ' WHERE type = ? AND method = ? ORDER BY reset DESC';
+        $sql = 'SELECT * FROM ' . $this->table . ' WHERE uid = ? ' . $timeWhere;
 
         /** @var \Madj2k\TwitterAnalyser\Model\Account $result */
-        $result = $this->_findOne($sql, [$type, $method]);
+        $result = $this->_findOne($sql, [$uid]);
         return $result;
     }
 
