@@ -71,7 +71,7 @@ try {
                     $logUtility->log($logUtility::LOG_INFO, 'No detail links found on the given url or all detail links found have already been imported for further processing.');
                 }
             } else {
-                $logUtility->log($logUtility::LOG_DEBUG, sprintf('Check for detail links skipped. Next check interval reached in %s seconds.', ((filemtime(__DIR__ . '/../import-details.lock') +  $params['checkInterval']) - time())));
+                $logUtility->log($logUtility::LOG_INFO, sprintf('Check for detail links skipped. Next check interval reached in %s seconds.', ((filemtime(__DIR__ . '/../import-details.lock') +  $params['checkInterval']) - time())));
             }
             
 

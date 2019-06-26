@@ -146,7 +146,7 @@ class TwitterAccountFinder
                         $importCount++;
                         $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Inserted new account %s found in url with id = %s.', $userName, $url->getUid()));
                     } else {
-                        $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Account %s found in url with id = %s. already exists.', $userName, $url->getUid()));
+                        $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Account %s found in url with id = %s already exists.', $userName, $url->getUid()));
                     }
                 }
 
