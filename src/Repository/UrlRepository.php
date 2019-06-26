@@ -22,12 +22,31 @@ class UrlRepository extends RepositoryAbstract
      * @return array|null
      * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
      */
-    public function findByProcessed($processed = 0, $limit = 10)
+    public function findByProcessedSortedByCreateTimestamp($processed = 0, $limit = 10)
     {
 
-        $sql = 'SELECT * FROM ' . $this->table . ' WHERE processed = ? LIMIT ' . intval($limit);
+        $sql = 'SELECT * FROM ' . $this->table . ' WHERE processed = ? ORDER BY create_timestamp ASC LIMIT ' . intval($limit);
 
         $result = $this->_findAll($sql, [$processed]);
+        return $result;
+    }
+
+
+    /**
+     * Find one by url and processed status
+     *
+     * @param string $url
+     * @param int $processed
+     * @return \Madj2k\TwitterAnalyser\Model\Url|null
+     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     */
+    public function findOneByUrlAndProcessed(string $url, $processed = 0)
+    {
+
+        $sql = 'SELECT * FROM ' . $this->table . ' WHERE url = ? AND processed = ?';
+
+        /** @var \Madj2k\TwitterAnalyser\Model\Url $result */
+        $result = $this->_findOne($sql, [$url, $processed]);
         return $result;
     }
 

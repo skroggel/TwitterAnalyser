@@ -25,6 +25,7 @@ try {
                 'regExpDetailLinks' => (isset($argv[3]) ? $argv[3] : '#<a[^>]+href="(/abgeordnete/biografien/[^"]+)"[^>]+>#'),
                 'regExpTwitterLinks' => (isset($argv[4]) ? $argv[4] : '#<a[^>]+href="(https://(www.)?twitter.com/[^"]+)"[^>]+>#'),
                 'maxLinksLimit' => (isset($argv[5]) ? $argv[5] : 10),
+                'checkInterval'=> (isset($argv[6]) ? $argv[6] : 604800),
             ];
     
             if (! $params['url']) {
@@ -55,12 +56,22 @@ try {
             /** @var \Madj2k\TwitterAnalyser\TwitterAccountFinder $accountFinder */
             $accountFinder = new \Madj2k\TwitterAnalyser\TwitterAccountFinder();
 
-            
-            $logUtility->log($logUtility::LOG_DEBUG, 'Checking for detail links.');
-            if ($importedLinks = $accountFinder->fetchDetailLinksFromWebList($params['url'], $params['baseUrl'], $params['regExpDetailLinks'])) {
-                $logUtility->log($logUtility::LOG_INFO, sprintf('Imported %s detail links for further processing on the given url.', $importedLinks));
+            if (
+                (! file_exists(__DIR__ . '/../import-details.lock'))
+                || (
+                    (file_exists(__DIR__ . '/../import-details.lock'))
+                    && (filemtime(__DIR__ . '/../import-details.lock') < (time() - $params['checkInterval']))
+                )
+            ) {
+                touch (__DIR__ . '/../import-details.lock');
+                $logUtility->log($logUtility::LOG_DEBUG, 'Checking for detail links.');
+                if ($importedLinks = $accountFinder->fetchDetailLinksFromWebList($params['url'], $params['baseUrl'], $params['regExpDetailLinks'])) {
+                    $logUtility->log($logUtility::LOG_INFO, sprintf('Imported %s detail links for further processing on the given url.', $importedLinks));
+                } else {
+                    $logUtility->log($logUtility::LOG_INFO, 'No detail links found on the given url or all detail links found have already been imported for further processing.');
+                }
             } else {
-                $logUtility->log($logUtility::LOG_INFO, 'No detail links found on the given url or all detail links found have already been imported for further processing.');
+                $logUtility->log($logUtility::LOG_DEBUG, sprintf('Check for detail links skipped. Next check interval reached in %s seconds.', ((filemtime(__DIR__ . '/../import-details.lock') +  $params['checkInterval']) - time())));
             }
             
 

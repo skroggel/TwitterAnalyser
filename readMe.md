@@ -45,10 +45,12 @@ In order to keep the load on the target server low and to avoid a blocking of th
 For this reason it is necessary to set up a cronjob.
 
 The Importer accepts the following parameters:
-* **url**: URL to the contact list as HTML page (e.g. `https://www.bundestag.de/ajax/filterlist/de/abgeordnete/525246-525246/h_e3c112579919ef960d06dbb9d0d44b67?limit=9999&view=BTBiographyList`)
-* **baseUrl**: Base URL of the contact list and the detail pages (e.g. `https://www.bundestag.de`)
-* **regExpDetailLinks**: Regular expression for extracting the links to the detail pages (e.g. `#<a[^>]+href="(/delegates/biographies/[^"]+)"[^>]+>#`),
-* **regExpTwitterLinks**: Regular expression for extracting the links to the Twitter accounts on the detail pages (e.g. `#<a[^>]+href="(https://(www.)?twitter.com/[^"]+)"[^>]+>#`)
+* **url**: URL to the contact list as HTML page (default: `https://www.bundestag.de/ajax/filterlist/de/abgeordnete/525246-525246/h_e3c112579919ef960d06dbb9d0d44b67?limit=9999&view=BTBiographyList`)
+* **baseUrl**: Base URL of the contact list and the detail pages (default: `https://www.bundestag.de`)
+* **regExpDetailLinks**: Regular expression for extracting the links to the detail pages (default: `#<a[^>]+href="(/delegates/biographies/[^"]+)"[^>]+>#`),
+* **regExpTwitterLinks**: Regular expression for extracting the links to the Twitter accounts on the detail pages (default: `#<a[^>]+href="(https://(www.)?twitter.com/[^"]+)"[^>]+>#`)
+* **maxLinksLimit**: Maximum number of detail links to be processed per call (default: `10`)
+* **checkInterval**: Interval in which the contact list is checked again, in seconds (default: `604800` = 1 week)
 
 Example using the CLI:
 ```
@@ -147,10 +149,12 @@ Um die Last auf dem Zielserver gering zu halten und eine Sperrung der IP durch d
 Hierfür ist daher die Einrichtung eines Cronjobs notwendig.
 
 Der Importer nimmt folgende Parameter entgegen:
-* **url**: URL zur Kontaktliste als HTML-Seite (z.B. `https://www.bundestag.de/ajax/filterlist/de/abgeordnete/525246-525246/h_e3c112579919ef960d06dbb9d0d44b67?limit=9999&view=BTBiographyList`)
-* **baseUrl**: Base-URL der Kontaktliste und der Detailseiten (z.B. `https://www.bundestag.de`)
-* **regExpDetailLinks**: Regulärer Ausdruck für das Extrahieren der Links zu den Detailseiten (z.B. `#<a[^>]+href="(/abgeordnete/biografien/[^"]+)"[^>]+>#`),
-* **regExpTwitterLinks**: Regulärer Ausdruck für das Extrahieren der Links zu den Twitter-Accounts auf den Detailseiten (z.B. `#<a[^>]+href="(https://(www.)?twitter.com/[^"]+)"[^>]+>#`)
+* **url**: URL zur Kontaktliste als HTML-Seite (default: `https://www.bundestag.de/ajax/filterlist/de/abgeordnete/525246-525246/h_e3c112579919ef960d06dbb9d0d44b67?limit=9999&view=BTBiographyList`)
+* **baseUrl**: Base-URL der Kontaktliste und der Detailseiten (default: `https://www.bundestag.de`)
+* **regExpDetailLinks**: Regulärer Ausdruck für das Extrahieren der Links zu den Detailseiten (default: `#<a[^>]+href="(/abgeordnete/biografien/[^"]+)"[^>]+>#`),
+* **regExpTwitterLinks**: Regulärer Ausdruck für das Extrahieren der Links zu den Twitter-Accounts auf den Detailseiten (default: `#<a[^>]+href="(https://(www.)?twitter.com/[^"]+)"[^>]+>#`)
+* **maxLinksLimit**: Maximale Anzahl der abzuarbeitenden Detail-Links je Aufruf (default: `10`)
+* **checkInterval**: Interval, in der die Kontaktliste erneut geprüft wird, in Sekunden (default: `604800` = 1 Woche)
 
 Beispiel-Aufruf über das CLI:
 ```

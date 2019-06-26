@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS `url` (
   `processed` tinyint(1) NOT NULL DEFAULT '0',
 
   PRIMARY KEY (uid),
-  KEY `processed` (`processed`)
+  KEY `processed` (`processed`),
+  KEY `url` (`url`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

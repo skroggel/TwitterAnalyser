@@ -87,7 +87,8 @@ class TwitterAccountFinder
 
                 $importCount = 0;
                 foreach ($detailLinks as $link) {
-                    if (! $this->urlRepository->findOneByUrl($link)) {
+                    if (! $this->urlRepository->findOneByUrlAndProcessed($link, false)) {
+
                         /** @var \Madj2k\TwitterAnalyser\Model\Url $urlObject */
                         $urlObject = new Url ();
                         $urlObject->setBaseUrl($baseUrl)
@@ -96,6 +97,8 @@ class TwitterAccountFinder
                         $this->urlRepository->insert($urlObject);
                         $importCount++;
                         $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Fetched links %s from %s.', $urlObject->getBaseUrl() . $urlObject->getUrl(), $url));
+                    } else {
+                        $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Link %s from %s already imported and unprocessed.', $link, $url));
                     }
                 }
                 $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Fetched %s links from %s.', $importCount, $url));
@@ -119,7 +122,7 @@ class TwitterAccountFinder
      */
     public function fetchAccountNamesFromDetailLinks ($regExpTwitterLinks = '#<a[^>]+href="(https://(www.)?twitter.com/[^"]+)"[^>]+>#', $limit = 10)
     {
-        if ($urlList = $this->urlRepository->findByProcessed(false, $limit)) {
+        if ($urlList = $this->urlRepository->findByProcessedSortedByCreateTimestamp(false, $limit)) {
 
             /** @var \Madj2k\TwitterAnalyser\Model\Url $url */
             $importCount = 0;
