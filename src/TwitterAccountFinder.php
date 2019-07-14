@@ -135,7 +135,7 @@ class TwitterAccountFinder
                     && ($twitterLink = $matches[1])
                 ) {
 
-                    $userName = str_replace('/', '', parse_url($twitterLink, PHP_URL_PATH));
+                    $userName = str_replace(['/', '@'], '', parse_url($twitterLink, PHP_URL_PATH));
 
                     /** @var \Madj2k\TwitterAnalyser\Model\Account $account */
                     $account = new Account();
