@@ -105,7 +105,7 @@ class TwitterAccountFinder
                 return $importCount;
             }
         } else {
-            $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Can not load url %s.', $url));
+            $this->logUtility->log($this->logUtility::LOG_WARNING, sprintf('Can not load url %s.', $url));
         }
 
         return false;
@@ -146,13 +146,13 @@ class TwitterAccountFinder
                         $importCount++;
                         $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Inserted new account %s found in url with id = %s.', $userName, $url->getUid()));
                     } else {
-                        $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Account %s found in url with id = %s already exists.', $userName, $url->getUid()));
+                        $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Account %s found in url with id = %s already exists.', $userName, $url->getUid()));
                     }
                 }
 
                 $url->setProcessed(true);
                 $this->urlRepository->update($url);
-                $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Processed url with id = %s.', $url->getUid()));
+                $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Processed url with id = %s.', $url->getUid()));
 
                 sleep(1);
             }

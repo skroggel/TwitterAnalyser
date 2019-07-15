@@ -27,6 +27,10 @@ try {
 
             $logLevel = (isset($SETTINGS['report']['log_level']) ? intval($SETTINGS['report']['log_level']) : 0);
             $maxTime = (isset($SETTINGS['report']['max_time']) ? intval($SETTINGS['report']['max_time']) : 0);
+            if (file_exists(__DIR__ . '/../reporter.last')) {
+                $maxTime = time() - filemtime(__DIR__ . '/../reporter.last');
+            }
+            touch(__DIR__ . '/../reporter.last');
 
             $logRepository = new \Madj2k\TwitterAnalyser\Repository\LogRepository();
             if ($logs = $logRepository->findAllByLevelAndTime($logLevel, (time() - $maxTime))) {
@@ -41,7 +45,7 @@ try {
                 }
 
                 mail($SETTINGS['report']['email'] , 'TwitterAnalyser Status Report', $mailText);
-                $logUtility->log($logUtility::LOG_INFO, 'Sent status report.');
+                $logUtility->log($logUtility::LOG_DEBUG, 'Sent status report.');
             }
 
             unlink(__DIR__ . '/../reporter.lock');

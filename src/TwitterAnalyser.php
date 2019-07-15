@@ -176,7 +176,7 @@ class TwitterAnalyser
                     ->buildOauth($url, 'GET')
                     ->performRequest()
             );
-            $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Fetched tweets for user %s', $account->getUserName()), $url . $this->twitter->getGetfield());
+            $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Fetched tweets for user %s', $account->getUserName()), $url . $this->twitter->getGetfield());
 
             if (
                 ($tweets)
@@ -194,12 +194,12 @@ class TwitterAnalyser
                         $this->tweetImportUtility->import($account, 'timeline', $tweet);
                     }
 
-                    $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Found %s new tweets for user = %s', count($tweets), $account->getUserName()));
+                    $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Found %s new tweets for user = %s', count($tweets), $account->getUserName()));
                     return true;
                 }
             }
 
-            $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('No tweets available for user %s', $account->getUserName()));
+            $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('No tweets available for user %s', $account->getUserName()));
 
         } catch (\Exception $e) {
             $this->logUtility->log($this->logUtility::LOG_ERROR, $e->getMessage());
@@ -240,7 +240,7 @@ class TwitterAnalyser
                     ->performRequest()
             );
 
-            $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Fetched tweets for user %s', $account->getUserName()), $url . $this->twitter->getGetfield());
+            $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Fetched tweets for user %s', $account->getUserName()), $url . $this->twitter->getGetfield());
 
             if (
                 ($jsonResult)
@@ -254,7 +254,7 @@ class TwitterAnalyser
                 if (count($tweets) > 0) {
 
                     // import tweets
-                    $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Found %s new tweets for user = %s', count($tweets), $account->getUserName()));
+                    $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Found %s new tweets for user = %s', count($tweets), $account->getUserName()));
                     foreach ($tweets as $tweet) {
                         $this->tweetImportUtility->import($account, 'searchTo', $tweet);
                     }
@@ -263,7 +263,7 @@ class TwitterAnalyser
                 }
             }
 
-            $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('No tweets available for user %s', $account->getUserName()));
+            $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('No tweets available for user %s', $account->getUserName()));
 
         } catch (\Exception $e) {
             $this->logUtility->log($this->logUtility::LOG_ERROR, $e->getMessage());
@@ -308,7 +308,7 @@ class TwitterAnalyser
                 ->buildOauth($url, 'GET')
                 ->performRequest()
             );
-            $this->logUtility->log($this->logUtility::LOG_INFO, 'Fetched rate limit from API');
+            $this->logUtility->log($this->logUtility::LOG_DEBUG, 'Fetched rate limit from API');
 
             if (
                 ($jsonResult)
