@@ -178,14 +178,10 @@ class TwitterAnalyser
             );
             $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Fetched tweets for user %s', $account->getUserName()), $url . $this->twitter->getGetfield());
 
-            if (
-                ($tweets)
-                && (is_array($tweets))
-            ) {
+            if (is_array($tweets)) {
 
                 // update pagination
                 $this->paginationUtility->setPagination($pagination, $tweets);
-
 
                 if (count($tweets) > 0) {
 
@@ -198,7 +194,6 @@ class TwitterAnalyser
                     return true;
                 }
             }
-
             $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('No tweets available for user %s', $account->getUserName()));
 
         } catch (\Exception $e) {
@@ -244,9 +239,10 @@ class TwitterAnalyser
 
             if (
                 ($jsonResult)
-                && ($tweets = $jsonResult->statuses)
-                && (is_array($tweets))
+                && (is_array($jsonResult->statuses))
             ){
+
+                $tweets = $jsonResult->statuses;
 
                 // update pagination
                 $this->paginationUtility->setPagination($pagination, $tweets);
