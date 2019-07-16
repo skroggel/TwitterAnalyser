@@ -168,7 +168,7 @@ class TwitterAccountFinder
                                 $importCount++;
 
                             } else {
-                                $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Account %s found in url with id = %s already exists.', $account->getUserName(), $url->getUid()));
+                                $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Account %s found in url with id = %s already exists.', $account->getUserName(), $url->getUid()));
                             }
 
                         // 2. Search via API by name

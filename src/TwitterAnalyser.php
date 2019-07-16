@@ -184,11 +184,11 @@ class TwitterAnalyser
                         $this->tweetImportUtility->import($account, 'timeline', $tweet);
                     }
 
-                    $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Found %s new tweets for user = %s', count($tweets), $account->getUserName()));
+                    $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Found %s new tweets for user = %s', count($tweets), $account->getUserName()));
                     return true;
                 }
             }
-            $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('No tweets available for user %s', $account->getUserName()));
+            $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('No tweets available for user %s', $account->getUserName()));
 
         } catch (\Exception $e) {
             $this->logUtility->log($this->logUtility::LOG_ERROR, $e->getMessage());
@@ -244,7 +244,7 @@ class TwitterAnalyser
                 if (count($tweets) > 0) {
 
                     // import tweets
-                    $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Found %s new tweets for user = %s', count($tweets), $account->getUserName()));
+                    $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Found %s new tweets for user = %s', count($tweets), $account->getUserName()));
                     foreach ($tweets as $tweet) {
                         $this->tweetImportUtility->import($account, 'searchTo', $tweet);
                     }
@@ -253,7 +253,7 @@ class TwitterAnalyser
                 }
             }
 
-            $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('No tweets available for user %s', $account->getUserName()));
+            $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('No tweets available for user %s', $account->getUserName()));
 
         } catch (\Exception $e) {
             $this->logUtility->log($this->logUtility::LOG_ERROR, $e->getMessage());
