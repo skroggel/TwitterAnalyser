@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS `url` (
   `base_url` varchar(255) NOT NULL,
   `type` varchar(255) NOT NULL,
   `processed` tinyint(1) NOT NULL DEFAULT '0',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0',
 
   PRIMARY KEY (uid),
   KEY `processed` (`processed`),

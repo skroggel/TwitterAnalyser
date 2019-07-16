@@ -48,6 +48,16 @@ class Account extends ModelAbstract
     protected $verified = false;
 
     /**
+     * @var bool
+     */
+    protected $isSuggestion = false;
+
+    /**
+     * @var string
+     */
+    protected $suggestionForName = '';
+
+    /**
      * @var int
      */
     protected $createdAt = 0;
@@ -86,6 +96,7 @@ class Account extends ModelAbstract
      * @var int
      */
     protected $fetchAddressedTimestamp = 0;
+
 
 
     /**
@@ -264,6 +275,53 @@ class Account extends ModelAbstract
     public function setVerified($verified)
     {
         $this->verified = boolval($verified);
+        return $this;
+    }
+
+    /**
+     * Gets isSuggestion
+     *
+     * @return bool
+     */
+    public function getIsSuggestion()
+    {
+        return $this->isSuggestion;
+    }
+
+
+    /**
+     * Sets isSuggestion
+     *
+     * @param bool $isSuggestion
+     * @return $this
+     */
+    public function setIsSuggestion($isSuggestion)
+    {
+        $this->isSuggestion = boolval($isSuggestion);
+        return $this;
+    }
+
+
+    /**
+     * Gets suggestionForName
+     *
+     * @return string
+     */
+    public function getSuggestionForName()
+    {
+        return $this->suggestionForName;
+    }
+
+
+    /**
+     * Sets suggestionForName
+     *
+     * @param string $suggestionForName
+     * @return $this
+     */
+    public function setSuggestionForName($suggestionForName)
+    {
+        $this->suggestionForName = $suggestionForName;
         return $this;
     }
 

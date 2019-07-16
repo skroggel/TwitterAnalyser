@@ -7,8 +7,10 @@ CREATE TABLE IF NOT EXISTS `pagination` (
   `type` varchar(255) NOT NULL,
   `highest_id` bigint(20) NOT NULL DEFAULT '0',
   `lowest_id` bigint(20) NOT NULL DEFAULT '0',
+  `last_lowest_id` bigint(20) NOT NULL DEFAULT '0',
   `since_id` bigint(20) NOT NULL DEFAULT '0',
   `max_id` bigint(20) NOT NULL DEFAULT '0',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0',
 
   PRIMARY KEY (uid),
   UNIQUE KEY `account_type` (`account`,`type`)

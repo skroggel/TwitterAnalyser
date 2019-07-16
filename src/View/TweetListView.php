@@ -91,7 +91,7 @@ class TweetListView
             }
         }
 
-        if ($subTweets = $this->tweetRepository->findAllByInReplyToTweetIdAndTypeOrderedByCreateAt($tweet->getTweetId(), 'searchTo')) {
+        if ($subTweets = $this->tweetRepository->findAllByInReplyToTweetIdOrderedByCreateAt($tweet->getTweetId())) {
 
             $html .= '<ol class="tweet-sublist" >';
 

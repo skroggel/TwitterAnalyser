@@ -22,7 +22,7 @@ class AccountRepository extends RepositoryAbstract
      * @param int $toTime
      * @return \Madj2k\TwitterAnalyser\Model\Account|null
      * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
-     */
+
     public function findOneByUidAndTime (int $uid, int $fromTime = 0, int $toTime = 0)
     {
         $timeWhere = '';
@@ -33,12 +33,13 @@ class AccountRepository extends RepositoryAbstract
             $timeWhere = 'AND created_at <= ' . intval($toTime);
         }
 
-        $sql = 'SELECT * FROM ' . $this->table . ' WHERE uid = ? ' . $timeWhere;
+        $sql = 'SELECT * FROM ' . $this->table . ' WHERE is_suggestion = 0 AND uid = ? ' . $timeWhere;
 
-        /** @var \Madj2k\TwitterAnalyser\Model\Account $result */
+        /** @var \Madj2k\TwitterAnalyser\Model\Account $result
         $result = $this->_findOne($sql, [$uid]);
         return $result;
     }
+    */
 
 
     /**
@@ -51,7 +52,7 @@ class AccountRepository extends RepositoryAbstract
     public function findAllSortedByLastFetchTimeline (int $limit)
     {
 
-        $sql = 'SELECT * FROM ' . $this->table . ' WHERE 1 = 1 ORDER BY fetch_timeline_timestamp ASC LIMIT ' . intval($limit);
+        $sql = 'SELECT * FROM ' . $this->table . ' WHERE is_suggestion = 0 ORDER BY fetch_timeline_timestamp ASC LIMIT ' . intval($limit);
 
         $result = $this->_findAll($sql, []);
         return $result;
@@ -67,7 +68,7 @@ class AccountRepository extends RepositoryAbstract
     public function findAllSortedByLastFetchAddressed (int $limit)
     {
 
-        $sql = 'SELECT * FROM ' . $this->table . ' WHERE 1 = 1 ORDER BY fetch_addressed_timestamp ASC LIMIT ' . intval($limit);
+        $sql = 'SELECT * FROM ' . $this->table . ' WHERE is_suggestion = 0 ORDER BY fetch_addressed_timestamp ASC LIMIT ' . intval($limit);
 
         $result = $this->_findAll($sql, []);
         return $result;

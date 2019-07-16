@@ -36,7 +36,7 @@ class TweetRepository extends RepositoryAbstract
             $timeWhere .= ' AND created_at <= ' . intval($toTime) . ' ';
         }
 
-        $sql = 'SELECT * FROM ' . $this->table . ' WHERE account = ? AND type = ? ' . $timeWhere . ' ORDER BY created_at DESC';
+        $sql = 'SELECT * FROM ' . $this->table . ' WHERE account = ? AND type = ? AND is_reply = 0' . $timeWhere . ' ORDER BY created_at DESC';
 
         $result = $this->_findAll($sql, [$account->getUid(), $type]);
         return $result;
@@ -48,16 +48,15 @@ class TweetRepository extends RepositoryAbstract
      * Get tweets by inReplyToTweetId
      *
      * @param string $tweetId
-     * @param string $type
      * @return array|null
      * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
      */
-    public function findAllByInReplyToTweetIdAndTypeOrderedByCreateAt($tweetId,  $type = 'timeline')
+    public function findAllByInReplyToTweetIdOrderedByCreateAt($tweetId)
     {
 
-        $sql = 'SELECT * FROM ' . $this->table . ' WHERE in_reply_to_tweet_id = ? AND type = ? ORDER BY created_at ASC';
+        $sql = 'SELECT * FROM ' . $this->table . ' WHERE is_reply = 1 AND in_reply_to_tweet_id = ? ORDER BY created_at ASC';
 
-        $result = $this->_findAll($sql, [$tweetId, $type]);
+        $result = $this->_findAll($sql, [$tweetId]);
         return $result;
     }
 

@@ -80,6 +80,11 @@ class Tweet extends ModelAbstract
     /**
      * @var int
      */
+    protected $isReply  = 0;
+
+    /**
+     * @var int
+     */
     protected $inReplyToTweetId = 0;
 
     /**
@@ -498,6 +503,28 @@ class Tweet extends ModelAbstract
         return $this;
     }
 
+    /**
+     * Gets isReply
+     *
+     * @return int
+     */
+    public function getIsReply()
+    {
+        return $this->isReply;
+    }
+
+
+    /**
+     * Sets isReply
+     *
+     * @param int $isReply
+     * @return $this
+     */
+    public function setIsReply($isReply)
+    {
+        $this->isReply= intval($isReply);
+        return $this;
+    }
 
 
     /**

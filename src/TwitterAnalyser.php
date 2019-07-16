@@ -21,30 +21,29 @@ class TwitterAnalyser
 
 
     /**
-     * @var \Madj2k\TwitterAnalyser\Repository\RateLimitRepository
-     */
-    protected $rateLimitRepository;
-
-    /**
      * @var \Madj2k\TwitterAnalyser\Repository\AccountRepository
      */
     protected $accountRepository;
-
-    /**
-     * @var \Madj2k\TwitterAnalyser\Utility\LogUtility
-     */
-    protected $logUtility;
 
     /**
      * @var \Madj2k\TwitterAnalyser\Utility\PaginationUtility
      */
     protected $paginationUtility;
 
-
     /**
      * @var \Madj2k\TwitterAnalyser\Utility\TweetImportUtility
      */
     protected $tweetImportUtility;
+
+    /**
+     * @var \Madj2k\TwitterAnalyser\Utility\RateLimitUtility
+     */
+    protected $rateLimitUtility;
+
+    /**
+     * @var \Madj2k\TwitterAnalyser\Utility\LogUtility
+     */
+    protected $logUtility;
 
     /**
      * @var array
@@ -65,13 +64,12 @@ class TwitterAnalyser
         $this->settings = &$SETTINGS;
 
         // set defaults
-        $this->rateLimitRepository = new \Madj2k\TwitterAnalyser\Repository\RateLimitRepository();
         $this->accountRepository = new \Madj2k\TwitterAnalyser\Repository\AccountRepository();
 
-        $this->logUtility = new  \Madj2k\TwitterAnalyser\Utility\LogUtility();
         $this->paginationUtility = new  \Madj2k\TwitterAnalyser\Utility\PaginationUtility();
         $this->tweetImportUtility = new \Madj2k\TwitterAnalyser\Utility\TweetImportUtility();
-
+        $this->rateLimitUtility = new \Madj2k\TwitterAnalyser\Utility\RateLimitUtility();
+        $this->logUtility = new  \Madj2k\TwitterAnalyser\Utility\LogUtility();
 
         // init Twitter API
         $this->twitter = new \TwitterAPIExchange($this->settings['twitter']);
@@ -89,10 +87,9 @@ class TwitterAnalyser
     {
         
         // 1.) Get rate limit for timeline API and fetch an according amount of accounts for that
-        /** @var \Madj2k\TwitterAnalyser\Model\RateLimit $rateLimit */
-        if ($rateLimit = $this->getRateLimitForMethod('statuses', 'user_timeline')) {
+        if ($rateLimit = $this->rateLimitUtility->getRateLimitForMethod('statuses', 'user_timeline')) {
 
-            $limit = ($rateLimit->getRemaining() > intval($this->settings['max_fetch'])) ? intval($this->settings['max_fetch']) : $rateLimit->getRemaining();
+            $limit = ($rateLimit > intval($this->settings['max_fetch'])) ? intval($this->settings['max_fetch']) : $rateLimit;
             if (
                 ($limit > 0)
                 && ($accounts = $this->accountRepository->findAllSortedByLastFetchTimeline($limit))
@@ -104,23 +101,21 @@ class TwitterAnalyser
 
                     $account->setFetchTimelineTimestamp(time());
                     $this->accountRepository->update($account);
-                    sleep(2);
+                    sleep(1);
                 }
 
-                $rateLimit->setRemaining($rateLimit->getRemaining() - count($accounts));
-                $this->rateLimitRepository->update($rateLimit);
-
-                $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Fetched timeline tweets for %s account(s). Remaining rate limit is %s.', count($accounts), $rateLimit->getRemaining()));
+                // update rate limit
+                $remainingRateLimit = $this->rateLimitUtility->setRateLimitForMethod('statuses', 'user_timeline', count($accounts));
+                $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Fetched timeline tweets for %s account(s). Remaining rate limit is %s.', count($accounts), $remainingRateLimit));
             } else {
                 $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('No timeline tweets fetched. Rate limit reached or no accounts available.'));
             }
         }
 
         // 2.) Get rate limit for search  APIand fetch an according amount of accounts for that
-        /** @var \Madj2k\TwitterAnalyser\Model\RateLimit $rateLimit */
-        if ($rateLimit = $this->getRateLimitForMethod('search', 'tweets')) {
+        if ($rateLimit = $this->rateLimitUtility->getRateLimitForMethod('search', 'tweets')) {
 
-            $limit = ($rateLimit->getRemaining() > intval($this->settings['max_fetch'])) ? intval($this->settings['max_fetch']) : $rateLimit->getRemaining();
+            $limit = ($rateLimit > intval($this->settings['max_fetch'])) ? intval($this->settings['max_fetch']) : $rateLimit;
             if (
                 ($limit > 0)
                 && ($accounts = $this->accountRepository->findAllSortedByLastFetchAddressed($limit))
@@ -132,13 +127,12 @@ class TwitterAnalyser
 
                     $account->setFetchAddressedTimestamp(time());
                     $this->accountRepository->update($account);
-                    sleep(2);
+                    sleep(1);
                 }
 
-                $rateLimit->setRemaining($rateLimit->getRemaining() - count($accounts));
-                $this->rateLimitRepository->update($rateLimit);
-
-                $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Fetched addressed-to tweets for %s account(s). Remaining rate limit is %s.', count($accounts), $rateLimit->getRemaining()));
+                // update rate limit
+                $remainingRateLimit = $this->rateLimitUtility->setRateLimitForMethod('search', 'tweets', count($accounts));
+                $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Fetched addressed-to tweets for %s account(s). Remaining rate limit is %s.', count($accounts), $remainingRateLimit));
             } else {
                 $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('No addressed-to tweets fetched. Rate limit reached or no accounts available.'));
             }
@@ -160,7 +154,7 @@ class TwitterAnalyser
         $constraints = [
             'screen_name=' . $account->getUserName(),
             'count=100',
-            'exclude_replies=true',
+            'exclude_replies=false',
             'include_rts=true',
             'tweet_mode=extended',
         ];
@@ -270,76 +264,5 @@ class TwitterAnalyser
 
     }
 
-
-
-
-    /**
-     * Get rate limit for API-call
-     *
-     * @param string $category
-     * @param string $method
-     * @return \Madj2k\TwitterAnalyser\Model\RateLimit|null
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
-     */
-    public function getRateLimitForMethod($category, $method)
-    {
-
-        /** @var \Madj2k\TwitterAnalyser\Model\RateLimit $rateLimit */
-        if ($rateLimit = $this->rateLimitRepository->findOneByCategoryAndMethod($category, $method)) {
-            $this->logUtility->log($this->logUtility::LOG_DEBUG, 'Fetched rate limit from database');
-            if ($rateLimit->getReset() > time()) {
-                return $rateLimit;
-                //===
-            }
-        };
-
-
-        // 2.) if there is nothing in the database we fetch it directly from twitter and save it in database
-        $url = 'https://api.twitter.com/1.1/application/rate_limit_status.json';
-        $getFields = '?resources=application,' . $category;
-        try {
-
-            $jsonResult = json_decode(
-                $this->twitter->setGetfield($getFields)
-                ->buildOauth($url, 'GET')
-                ->performRequest()
-            );
-            $this->logUtility->log($this->logUtility::LOG_DEBUG, 'Fetched rate limit from API');
-
-            if (
-                ($jsonResult)
-                && ($jsonResult->resources)
-                && ($jsonResult->resources->{$category})
-                && ($object = $jsonResult->resources->{$category}->{'/' . $category . '/' . $method})
-            ) {
-
-                /** @var \Madj2k\TwitterAnalyser\Model\RateLimit $rateLimit */
-                if (! $rateLimit) {
-                    $rateLimit = new RateLimit($object);
-                    $rateLimit->setCategory($category);
-                    $rateLimit->setMethod($method);
-
-                    $this->rateLimitRepository->insert($rateLimit);
-                } else {
-                    $rateLimit->setLimits($object->limit);
-                    $rateLimit->setRemaining($object->remaining);
-                    $rateLimit->setReset($object->reset);
-
-                    $this->rateLimitRepository->update($rateLimit);
-                }
-
-                $this->logUtility->log($this->logUtility::LOG_DEBUG, 'Saved rate limit in database');
-                return $rateLimit;
-                //===
-            }
-
-        } catch (\Exception $e) {
-            $this->logUtility->log($this->logUtility::LOG_ERROR, $e->getMessage());
-        }
-
-        return null;
-        //===
-
-    }
 
 }

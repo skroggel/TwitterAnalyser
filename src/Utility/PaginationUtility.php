@@ -90,11 +90,12 @@ class PaginationUtility
         // if there are results returned...
         if (count($jsonResult) > 0) {
 
-            // save highest and lowest ever processed tweet-id
+            // save highest ever processed tweet-id
             if ($pagination->getHighestId() < $jsonResult[0]->id) {
                 $pagination->setHighestId($jsonResult[0]->id);
             }
 
+            // save lowest ever processed tweet-id
             if (
                 ($pagination->getLowestId() > $jsonResult[count($jsonResult)-1]->id)
                 || ($pagination->getLowestId() < 1)
@@ -102,10 +103,13 @@ class PaginationUtility
                 $pagination->setLowestId($jsonResult[count($jsonResult)-1]->id);
             }
 
-            // check if lowest processed id is still above the limit defined by sinceId (from sinceId upwards)
-            // if so we start from the lowest processed id next time in order to prevent duplicates
-            if ($pagination->getLowestId() >= $pagination->getSinceId()) {
-                $pagination->setMaxId($pagination->getLowestId() - 1);
+            // set lowest tweet-id of last processing
+            $pagination->setLastLowestId($jsonResult[count($jsonResult)-1]->id);
+
+            // check if last lowest processed id is still above the limit defined by sinceId (from sinceId upwards)
+            // if so we start from the last lowest processed id next time in order to prevent duplicates
+            if ($pagination->getLastLowestId() >= $pagination->getSinceId()) {
+                $pagination->setMaxId($pagination->getLastLowestId() - 1);
             }
             $this->paginationRepository->update($pagination);
 

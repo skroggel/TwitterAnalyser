@@ -8,6 +8,8 @@ CREATE TABLE IF NOT EXISTS `log` (
   `method` varchar(255) DEFAULT NULL,
   `api_call` text,
   `comment` text,
+  `deleted` tinyint(1) NOT NULL DEFAULT '0',
+
 
   PRIMARY KEY (uid),
   KEY `level` (`level`),

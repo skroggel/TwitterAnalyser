@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS `rate_limit` (
   `limits` int(11) NOT NULL DEFAULT '0',
   `remaining` int(11) NOT NULL DEFAULT '0',
   `reset` int(11) NOT NULL DEFAULT '0',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0',
 
   PRIMARY KEY (uid),
   UNIQUE KEY `category_method` (`category`,`method`)

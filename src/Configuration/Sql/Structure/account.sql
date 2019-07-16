@@ -10,13 +10,15 @@ CREATE TABLE IF NOT EXISTS `account` (
   `url` varchar(255) DEFAULT NULL,
   `created_at` int(11) NOT NULL DEFAULT '0',
   `verified` tinyint(1) NOT NULL DEFAULT '0',
+  `is_suggestion` tinyint(1) NOT NULL DEFAULT '0',
   `followers_count` int(11) NOT NULL DEFAULT '0',
   `friends_count` int(11) NOT NULL DEFAULT '0',
   `listed_count` int(11) NOT NULL DEFAULT '0',
   `favorites_count` int(11) NOT NULL DEFAULT '0',
   `statuses_count` int(11) NOT NULL DEFAULT '0',
   `fetch_timeline_timestamp` int(11) NOT NULL DEFAULT '0',
-  `fetch_addressed_timestamp` int(11) NOT NULL DEFAULT '0'
+  `fetch_addressed_timestamp` int(11) NOT NULL DEFAULT '0',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0',
 
   PRIMARY KEY (uid),
   UNIQUE KEY `user_name` (`user_name`),

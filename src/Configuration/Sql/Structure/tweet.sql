@@ -16,10 +16,12 @@ CREATE TABLE IF NOT EXISTS `tweet` (
   `symbols` text,
   `media` text,
   `source` varchar(255) NOT NULL,
+  `is_reply` tinyint(1) NOT NULL DEFAULT '0',
   `in_reply_to_tweet_id` bigint(20) NOT NULL DEFAULT '0',
   `in_reply_to_user_id` bigint(20) NOT NULL DEFAULT '0',
   `retweet_count` int(11) NOT NULL DEFAULT '0',
   `favorite_count` int(11) NOT NULL DEFAULT '0',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0',
 
   PRIMARY KEY (uid),
   KEY `account_type` (`account`,`type`),

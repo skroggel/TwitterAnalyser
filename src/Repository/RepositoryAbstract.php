@@ -60,28 +60,51 @@ abstract class RepositoryAbstract
             )
         );
 
-        // init tables
+        // init and update tables
         $structurePath = __DIR__ . '/../Configuration/Sql/Structure/';
         $dataPath = __DIR__ . '/../Configuration/Sql/Data/';
+        $updatePath = __DIR__ . '/../Configuration/Sql/Updates/';
+
+        // build structure
         if(
-            (! file_exists($structurePath . $this->table. '.lock'))
-            && (file_exists($structurePath . $this->table. '.sql'))
+            (! file_exists($structurePath . $this->table . '.lock'))
+            && (file_exists($structurePath . $this->table . '.sql'))
         ){
             $databaseQuery = file_get_contents($structurePath . $this->table . '.sql');
             if ($this->pdo->exec($databaseQuery) !== false) {
-                touch($structurePath . $this->table. '.lock');
+                touch($structurePath . $this->table . '.lock');
             }
         }
 
+        // do updates
+        $updateFiles = glob($updatePath . $this->table . '*.sql', GLOB_BRACE);
+        foreach ($updateFiles as $file) {
+
+            if (! is_file($file)) {
+                continue;
+            }
+
+            $fileName = pathinfo($file,PATHINFO_FILENAME);
+            if (! file_exists($updatePath . $fileName . '.lock')) {
+                $databaseQuery = file_get_contents($file);
+                if ($this->pdo->exec($databaseQuery) !== false) {
+                    touch($updatePath . $fileName . '.lock');
+                }
+            }
+        }
+
+        // insert data
         if(
-            (! file_exists($dataPath . $this->table. '.lock'))
-            && (file_exists($dataPath .  $this->table. '.sql'))
+            (! file_exists($dataPath . $this->table . '.lock'))
+            && (file_exists($dataPath .  $this->table . '.sql'))
         ){
             $databaseQuery = file_get_contents($dataPath .  $this->table . '.sql');
             if ($this->pdo->exec($databaseQuery) !== false) {
-                touch($dataPath . $this->table. '.lock');
+                touch($dataPath . $this->table . '.lock');
             }
         }
+
+
 
     }
 
@@ -98,6 +121,7 @@ abstract class RepositoryAbstract
     {
         $whereArguments = [];
         $whereClause = '1 = 1';
+        $checkDeleted = true;
         $fetchMethod = '_findAll';
         $select = '*';
 
@@ -110,6 +134,9 @@ abstract class RepositoryAbstract
             $fetchMethod = '_findOne';
             $whereArguments = array($arguments[0]);
             $whereClause = GeneralUtility::camelCaseToUnderscore($property) . ' = ?';
+            if (isset($arguments[1])) {
+                $checkDeleted = boolval($arguments[1]);
+            }
 
         } elseif (strpos($method, 'findBy') === 0) {
             if (! $arguments[0]) {
@@ -119,9 +146,16 @@ abstract class RepositoryAbstract
             $property = (substr($method, 6));
             $whereArguments = array($arguments[0]);
             $whereClause = GeneralUtility::camelCaseToUnderscore($property) . ' = ?';
+            if (isset($arguments[1])) {
+                $checkDeleted = boolval($arguments[1]);
+            }
 
         } elseif (strpos($method, 'findAll') === 0) {
             // nothing to do
+
+            if (isset($arguments[0])) {
+                $checkDeleted = boolval($arguments[0]);
+            }
 
         } elseif (strpos($method, 'countAll') === 0) {
             $select = 'COUNT(uid)';
@@ -137,13 +171,16 @@ abstract class RepositoryAbstract
             $property = (substr($method, 7));
             $whereArguments = array($arguments[0]);
             $whereClause = GeneralUtility::camelCaseToUnderscore($property) . ' = ?';
+            if (isset($arguments[1])) {
+                $checkDeleted = boolval($arguments[1]);
+            }
 
         } else {
             throw new RepositoryException(sprintf('The %s repository does not have a method %s.', get_called_class(), $method));
         }
 
         $sql = 'SELECT ' . $select . ' FROM ' . $this->table . ' WHERE ' . $whereClause;
-        return $this->$fetchMethod($sql, $whereArguments);
+        return $this->$fetchMethod($sql, $whereArguments, $checkDeleted);
         //===
     }
 
@@ -153,11 +190,18 @@ abstract class RepositoryAbstract
      *
      * @param string $sql
      * @param array $arguments
+     * @param bool $checkDeleted
      * @return array|null
      * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
      */
-    public function _countAll (string $sql, array $arguments = [])
+    public function _countAll (string $sql, array $arguments = [], $checkDeleted = true)
     {
+
+        if ($checkDeleted) {
+            $sql = str_replace('where', 'where deleted = ? and', strtolower($sql));
+            array_unshift($arguments, 0);
+        }
+
         $sth = $this->pdo->prepare($sql);
         if ($sth->execute($arguments)) {
             if ($resultDb = $sth->fetchAll(\PDO::FETCH_ASSOC)) {
@@ -178,11 +222,17 @@ abstract class RepositoryAbstract
      *
      * @param string $sql
      * @param array $arguments
+     * * @param bool $checkDeleted
      * @return array|null
      * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
      */
-    public function _findAll (string $sql, array $arguments = [])
+    public function _findAll (string $sql, array $arguments = [], $checkDeleted = true)
     {
+        if ($checkDeleted) {
+            $sql = str_replace('where', 'where deleted = ? and', strtolower($sql));
+            array_unshift($arguments, 0);
+        }
+
         $sth = $this->pdo->prepare($sql);
         if ($sth->execute($arguments)) {
             if ($resultDb = $sth->fetchAll(\PDO::FETCH_ASSOC)) {
@@ -205,13 +255,19 @@ abstract class RepositoryAbstract
      *
      * @param string $sql
      * @param array $arguments
+     * @param bool $checkDeleted
      * @return \Madj2k\TwitterAnalyser\Model\ModelAbstract|null
      * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
      */
-    public function _findOne (string $sql, array $arguments = [])
+    public function _findOne (string $sql, array $arguments = [], $checkDeleted = true)
     {
 
         $sql .= ' LIMIT 1';
+
+        if ($checkDeleted) {
+            $sql = str_replace('where', 'where deleted = ? and', strtolower($sql));
+            array_unshift($arguments, 0);
+        }
 
         $sth = $this->pdo->prepare($sql);
         if ($sth->execute($arguments)) {
@@ -225,9 +281,7 @@ abstract class RepositoryAbstract
 
         } else {
             throw new RepositoryException($sth->errorInfo()[2]);
-
         }
-
 
     }
 

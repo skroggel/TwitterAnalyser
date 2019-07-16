@@ -32,6 +32,12 @@ abstract class ModelAbstract
 
 
     /**
+     * @var bool
+     */
+    protected $deleted = false;
+
+
+    /**
      * @var array
      */
     protected $_mapping = [];
@@ -187,6 +193,31 @@ abstract class ModelAbstract
         $this->changeTimestamp = intval($timestamp);
         return $this;
     }
+
+
+    /**
+     * Gets deleted
+     *
+     * @return bool
+     */
+    public function getDeleted()
+    {
+        return $this->deleted;
+    }
+
+
+    /**
+     * Sets deleted
+     *
+     * @param bool $deleted
+     * @return $this
+     */
+    public function setDeleted($deleted)
+    {
+        $this->deleted = boolval($deleted);
+        return $this;
+    }
+
 
 
     /**

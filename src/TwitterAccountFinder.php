@@ -16,9 +16,9 @@ class TwitterAccountFinder
 {
 
     /**
-     * @var string
+     * @var \TwitterAPIExchange
      */
-    protected $url;
+    protected $twitter;
 
     /**
      * @var \Madj2k\TwitterAnalyser\Repository\AccountRepository
@@ -29,6 +29,11 @@ class TwitterAccountFinder
      * @var \Madj2k\TwitterAnalyser\Repository\UrlRepository
      */
     protected $urlRepository;
+
+    /**
+     * @var \Madj2k\TwitterAnalyser\Utility\RateLimitUtility
+     */
+    protected $rateLimitUtility;
 
     /**
      * @var \Madj2k\TwitterAnalyser\Utility\LogUtility
@@ -57,7 +62,11 @@ class TwitterAccountFinder
         $this->accountRepository = new \Madj2k\TwitterAnalyser\Repository\AccountRepository();
         $this->urlRepository = new \Madj2k\TwitterAnalyser\Repository\UrlRepository();
 
+        $this->rateLimitUtility = new \Madj2k\TwitterAnalyser\Utility\RateLimitUtility();
         $this->logUtility = new  \Madj2k\TwitterAnalyser\Utility\LogUtility();
+
+        // init Twitter API
+        $this->twitter = new \TwitterAPIExchange($this->settings['twitter']);
     }
 
 
@@ -116,45 +125,130 @@ class TwitterAccountFinder
      * Get twitter accounts using a list of peoples with detail links
      *
      * @param string $regExpTwitterLinks
+     * @param string $regExpNames
      * @param int $limit
      * @return int|false
      * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
      */
-    public function fetchAccountNamesFromDetailLinks ($regExpTwitterLinks = '#<a[^>]+href="(https://(www.)?twitter.com/[^"]+)"[^>]+>#', $limit = 10)
+    public function fetchAccountNamesFromDetailLinks ($regExpTwitterLinks = '#<a[^>]+href="(https://(www.)?twitter.com/[^"]+)"[^>]+>#', $regExpNames = '#<div class="[^"]+ bt-biografie-name">[^<]*<h3>([^<]+)</h3>#', $limit = 10)
     {
-        if ($urlList = $this->urlRepository->findByProcessedSortedByCreateTimestamp(false, $limit)) {
 
-            /** @var \Madj2k\TwitterAnalyser\Model\Url $url */
+
+        // Get rate limit for user search API and fetch an according amount of urls
+        if ($rateLimit = $this->rateLimitUtility->getRateLimitForMethod('users', 'search')) {
+
             $importCount = 0;
-            foreach ($urlList as $url) {
+            $limit = ($rateLimit > intval($this->settings['max_fetch'])) ? intval($this->settings['max_fetch']) : $rateLimit;
+            if (
+                ($limit > 0)
+                && ($urlList = $this->urlRepository->findByProcessedSortedByCreateTimestamp(false, $limit))
+            ){
 
-                $matches = [];
-                if (
-                    ($detailPage = $this->fetchData($url->getBaseUrl() . $url->getUrl()))
-                    && (preg_match($regExpTwitterLinks, $detailPage, $matches))
-                    && ($twitterLink = $matches[1])
-                ) {
+                /** @var \Madj2k\TwitterAnalyser\Model\Url $url */
+                foreach ($urlList as $url) {
 
-                    $userName = str_replace(['/', '@'], '', parse_url($twitterLink, PHP_URL_PATH));
+                    $matches = [];
+                    if ($detailPage = $this->fetchData($url->getBaseUrl() . $url->getUrl())) {
 
-                    /** @var \Madj2k\TwitterAnalyser\Model\Account $account */
-                    $account = new Account();
-                    $account->setUserName($userName);
+                        // 1. Check for Twitter-Links
+                        if (
+                            (preg_match($regExpTwitterLinks, $detailPage, $matches))
+                            && ($twitterLink = $matches[1])
+                        ) {
 
-                    if (! $this->accountRepository->findOneByUserName($userName)) {
-                        $this->accountRepository->insert($account);
-                        $importCount++;
-                        $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Inserted new account %s found in url with id = %s.', $userName, $url->getUid()));
-                    } else {
-                        $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Account %s found in url with id = %s already exists.', $userName, $url->getUid()));
+                            $userName = str_replace(['/', '@'], '', parse_url($twitterLink, PHP_URL_PATH));
+
+                            /** @var \Madj2k\TwitterAnalyser\Model\Account $account */
+                            $account = new Account();
+                            $account->setUserName($userName);
+
+                            if (!$this->accountRepository->findOneByUserName($account->getUserName(), false)) {
+                                $this->accountRepository->insert($account);
+                                $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Inserted new account %s found in url with id = %s.', $account->getUserName(), $url->getUid()));
+                                $importCount++;
+
+                            } else {
+                                $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Account %s found in url with id = %s already exists.', $account->getUserName(), $url->getUid()));
+                            }
+
+                        // 2. Search via API by name
+                        } else if (
+                            (preg_match($regExpNames, $detailPage, $matches))
+                            && ($name = trim($matches[1]))
+                        ) {
+
+                            // remove comma appendix
+                            if (false !== $pos = strpos($name, ',')) {
+                                $name = trim(substr($name, 0, $pos));
+                            }
+
+                            // remove title prefix
+                            if (false !== $pos = strpos($name, 'Dr.')) {
+                                $name = trim(substr($name, strlen('Dr.')));
+                            }
+
+                            // prepare API call
+                            $apiUrl = 'https://api.twitter.com/1.1/users/search.json';
+                            $constraints = [
+                                'q=' . $name,
+                                'include_entities=false',
+                                'count=20', // maximum value
+                                'page=1',
+                            ];
+
+                            try {
+
+                                $foundAccounts = json_decode(
+                                    $this->twitter->setGetfield('?' . implode('&', $constraints))
+                                        ->buildOauth($apiUrl, 'GET')
+                                        ->performRequest()
+                                );
+
+                                $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Searched possible accounts for name "%s".', $name), $apiUrl . $this->twitter->getGetfield());
+
+                                if (
+                                    (is_array($foundAccounts))
+                                    && (count($foundAccounts) > 0)
+                                ){
+
+                                    foreach ($foundAccounts as $foundAccount) {
+
+                                        /** @var \Madj2k\TwitterAnalyser\Model\Account $account */
+                                        $account = new Account($foundAccount);
+                                        $account->setIsSuggestion(true)
+                                            ->setSuggestionForName($name);
+
+                                        if (!$this->accountRepository->findOneByUserName($account->getUserName(), false)) {
+                                            $this->accountRepository->insert($account);
+                                            $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Inserted new account %s as suggestion found in url with id = %s.', $account->getUserName(), $url->getUid()));
+                                            $importCount++;
+
+                                        } else {
+                                            $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Account %s found as suggestion in url with id = %s already exists.', $account->getUserName(), $url->getUid()));
+                                        }
+                                    }
+
+                                    $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Found %s possible account(s) for name "%s".', count($foundAccounts), $name));
+
+                                } else {
+                                    $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('No possible accounts for name "%s" found.', $name));
+                                }
+
+                            } catch (\Exception $e) {
+                                $this->logUtility->log($this->logUtility::LOG_ERROR, $e->getMessage());
+                            }
+                        }
                     }
+
+                    $url->setProcessed(true);
+                    $this->urlRepository->update($url);
+                    $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Processed url with id = %s.', $url->getUid()));
+
+                    sleep(1);
                 }
 
-                $url->setProcessed(true);
-                $this->urlRepository->update($url);
-                $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Processed url with id = %s.', $url->getUid()));
-
-                sleep(1);
+                $remainingRateLimit = $this->rateLimitUtility->setRateLimitForMethod('users', 'search', count($urlList));
+                $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Imported %s account(s) via %s processed urls. Remaining rate limit is %s.', $importCount, count($urlList), $remainingRateLimit));
             }
 
             return $importCount;
@@ -180,7 +274,7 @@ class TwitterAccountFinder
         $data = curl_exec($ch);
         curl_close($ch);
 
-        return $data;
+        return preg_replace('#[[:cntrl:]]#', '', $data);
     }
 
 

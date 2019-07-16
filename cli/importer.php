@@ -24,8 +24,9 @@ try {
                 'baseUrl' => (isset($argv[2]) ? $argv[2] : 'https://www.bundestag.de'),
                 'regExpDetailLinks' => (isset($argv[3]) ? $argv[3] : '#<a[^>]+href="(/abgeordnete/biografien/[^"]+)"[^>]+>#'),
                 'regExpTwitterLinks' => (isset($argv[4]) ? $argv[4] : '#<a[^>]+href="(https://(www.)?twitter.com/[^"]+)"[^>]+>#'),
-                'maxLinksLimit' => (isset($argv[5]) ? $argv[5] : 10),
-                'checkInterval'=> (isset($argv[6]) ? $argv[6] : 604800),
+                'regExpNames' => (isset($argv[5]) ? $argv[5] : '#<div class="[^"]+ bt-biografie-name">[^<]*<h3>([^<]+)</h3>#'),
+                'maxLinksLimit' => (isset($argv[6]) ? $argv[6] : 10),
+                'checkInterval'=> (isset($argv[7]) ? $argv[7] : 604800),
             ];
     
             if (! $params['url']) {
@@ -48,6 +49,12 @@ try {
     
             if (! $params['regExpTwitterLinks']) {
                 $logUtility->log($logUtility::LOG_ERROR, 'Please specify the regular expression for extracting the Twitter links on the detail pages.');
+                unlink(__DIR__ . '/../import.lock');
+                exit(1);
+            }
+
+            if (! $params['regExpNames']) {
+                $logUtility->log($logUtility::LOG_ERROR, 'Please specify the regular expression for extracting names on the detail pages.');
                 unlink(__DIR__ . '/../import.lock');
                 exit(1);
             }
@@ -76,7 +83,7 @@ try {
             
 
             $logUtility->log($logUtility::LOG_DEBUG, sprintf('Checking for account names on imported detail pages, using maxLinksLimit=%s', $params['maxLinksLimit']));
-            if ($importedAccounts = $accountFinder->fetchAccountNamesFromDetailLinks($params['regExpTwitterLinks'], $params['maxLinksLimit'])) {
+            if ($importedAccounts = $accountFinder->fetchAccountNamesFromDetailLinks($params['regExpTwitterLinks'], $params['regExpNames'], $params['maxLinksLimit'])) {
                 $logUtility->log($logUtility::LOG_INFO, sprintf('Imported %s Twitter accounts based on details links on the given url.', $importedAccounts));
             } else {
                 $logUtility->log($logUtility::LOG_INFO, 'No Twitter accounts imported based on the given url.');

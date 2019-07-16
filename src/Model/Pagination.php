@@ -35,6 +35,11 @@ class Pagination extends ModelAbstract
     /**
      * @var int
      */
+    protected $lastLowestId = 0;
+
+    /**
+     * @var int
+     */
     protected $sinceId = 0;
 
     /**
@@ -135,6 +140,30 @@ class Pagination extends ModelAbstract
     public function setLowestId($lowestId)
     {
         $this->lowestId = intval($lowestId);
+        return $this;
+    }
+
+
+    /**
+     * Gets lastLowestId
+     *
+     * @return int
+     */
+    public function getLastLowestId()
+    {
+        return $this->lastLowestId;
+    }
+
+
+    /**
+     * Sets lastLowestId
+     *
+     * @param int $lastLowestId
+     * @return $this
+     */
+    public function setLastLowestId($lastLowestId)
+    {
+        $this->lastLowestId = intval($lastLowestId);
         return $this;
     }
 

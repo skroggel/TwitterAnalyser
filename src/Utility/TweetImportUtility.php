@@ -71,13 +71,22 @@ class TweetImportUtility
     {
 
         $tweet = new Tweet($object);
-        $tweet->setAccount($account->getUid());
-        $tweet->setType($type);
+        $tweet->setAccount($account->getUid())
+            ->setType($type);
+
+        // check if tweet is a reply
+        if (
+            ($tweet->getInReplyToTweetId())
+            || ($tweet->getInReplyToUserId())
+            || (strpos($tweet->getFullText(), '@') === 0)
+        ) {
+            $tweet->setIsReply(true);
+        }
 
         // import some sub-objects with relevant data
         if ($object->user) {
-            $tweet->setUserId($object->user->id);
-            $tweet->setUserName($object->user->screen_name);
+            $tweet->setUserId($object->user->id)
+                ->setUserName($object->user->screen_name);
 
             // if $type is 'timeline' we also update the given account
             if ($type == 'timeline') {

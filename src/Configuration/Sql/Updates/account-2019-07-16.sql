@@ -1,0 +1,2 @@
+ALTER TABLE `account` ADD `suggestion_for_name` VARCHAR(255) NULL DEFAULT NULL AFTER `is_suggestion`;
+ALTER TABLE `account` CHANGE `suggestion_for_name` `suggestion_for_name` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;
