@@ -109,7 +109,7 @@ class TweetImportUtility
                     }
 
                     $this->accountRepository->update($secondaryAccountDatabase);
-                    $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Updated secondary account info for user %s in database.', $secondaryAccount->getUserName()));
+                    $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Updated secondary account info for user %s in database.', $secondaryAccountDatabase->getUserName()));
 
                 } else {
 
