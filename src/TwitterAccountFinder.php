@@ -105,7 +105,7 @@ class TwitterAccountFinder
 
                         $this->urlRepository->insert($urlObject);
                         $importCount++;
-                        $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Fetched links %s from %s.', $urlObject->getBaseUrl() . $urlObject->getUrl(), $url));
+                        $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Fetched link %s from %s.', $urlObject->getBaseUrl() . $urlObject->getUrl(), $url));
                     } else {
                         $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Link %s from %s already imported and unprocessed.', $link, $url));
                     }
