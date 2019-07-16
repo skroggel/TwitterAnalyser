@@ -19,12 +19,14 @@ try {
         if (!file_exists(__DIR__ . '/../fetch.lock')) {
             touch(__DIR__ . '/../fetch.lock');
 
+            $logUtility->log($logUtility::LOG_INFO, 'Fetching tweets.');
+
             /** @var \Madj2k\TwitterAnalyser\TwitterAnalyser $twitter */
             $twitter = new \Madj2k\TwitterAnalyser\TwitterAnalyser();
             $twitter->fetchTweets();
 
             unlink(__DIR__ . '/../fetch.lock');
-            $logUtility->log($logUtility::LOG_DEBUG, 'Done.');
+            $logUtility->log($logUtility::LOG_INFO, 'Finished fetching tweets.');
 
         } else {
             $logUtility->log($logUtility::LOG_WARNING, 'Script is already running.');
