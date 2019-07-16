@@ -162,13 +162,25 @@ class TwitterAccountFinder
                             $account = new Account();
                             $account->setUserName($userName);
 
-                            if (!$this->accountRepository->findOneByUserName($account->getUserName(), false)) {
+                            /** @var \Madj2k\TwitterAnalyser\Model\Account $databaseAccount */
+                            $databaseAccount = $this->accountRepository->findOneByUserName($account->getUserName(), false);
+                            if (! $databaseAccount) {
                                 $this->accountRepository->insert($account);
                                 $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Inserted new account %s found in url with id = %s.', $account->getUserName(), $url->getUid()));
                                 $importCount++;
 
                             } else {
-                                $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Account %s found in url with id = %s already exists.', $account->getUserName(), $url->getUid()));
+
+                                // if it is a secondary account it now becomes a primary one!
+                                if ($databaseAccount->getIsSecondary()) {
+                                    $databaseAccount->setIsSecondary(false);
+                                    $this->accountRepository->update($databaseAccount);
+                                    $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Account %s found in url with id = %s already exists as secondary account. Set to primary account now.', $account->getUserName(), $url->getUid()));
+
+                                } else {
+                                    $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Account %s found in url with id = %s already exists.', $account->getUserName(), $url->getUid()));
+                                }
+
                             }
 
                         // 2. Search via API by name
@@ -218,13 +230,25 @@ class TwitterAccountFinder
                                         $account->setIsSuggestion(true)
                                             ->setSuggestionForName($name);
 
-                                        if (!$this->accountRepository->findOneByUserName($account->getUserName(), false)) {
+                                        /** @var \Madj2k\TwitterAnalyser\Model\Account $databaseAccount */
+                                        $databaseAccount = $this->accountRepository->findOneByUserName($account->getUserName(), false);
+                                        if (! $databaseAccount) {
                                             $this->accountRepository->insert($account);
                                             $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Inserted new account %s as suggestion found in url with id = %s.', $account->getUserName(), $url->getUid()));
                                             $importCount++;
 
                                         } else {
-                                            $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Account %s found as suggestion in url with id = %s already exists.', $account->getUserName(), $url->getUid()));
+
+                                            // if it is a secondary account we mark it as suggestion!
+                                            if ($databaseAccount->getIsSecondary()) {
+                                                $databaseAccount->setIsSuggestion(true)
+                                                    ->setSuggestionForName($name);
+                                                $this->accountRepository->update($databaseAccount);
+                                                $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Account %s found as suggestion in url with id = %s already exists as secondary account. Marked as suggestion.', $account->getUserName(), $url->getUid()));
+
+                                            } else {
+                                                $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Account %s found as suggestion in url with id = %s already exists.', $account->getUserName(), $url->getUid()));
+                                            }
                                         }
                                     }
 
