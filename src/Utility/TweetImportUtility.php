@@ -100,10 +100,15 @@ class TweetImportUtility
             } else {
 
                 /** @var \Madj2k\TwitterAnalyser\Model\Account $secondaryAccount */
-                if ($secondaryAccount = $this->accountRepository->findOneByUserName($object->user->screen_name, false)) {
-                    $secondaryAccount->_injectData($object->user, false);
+                if ($secondaryAccountDatabase = $this->accountRepository->findOneByUserName($object->user->screen_name, false)) {
+                    $secondaryAccountDatabase->_injectData($object->user, false);
 
-                    $this->accountRepository->update($secondaryAccount);
+                    // set isSecondary only if it is a suggestion
+                    if ($secondaryAccountDatabase->getIsSuggestion()) {
+                        $secondaryAccount->setIsSecondary(true);
+                    }
+
+                    $this->accountRepository->update($secondaryAccountDatabase);
                     $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Updated secondary account info for user %s in database.', $secondaryAccount->getUserName()));
 
                 } else {
