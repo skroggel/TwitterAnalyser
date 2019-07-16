@@ -35,8 +35,9 @@ try {
             $logRepository = new \Madj2k\TwitterAnalyser\Repository\LogRepository();
             if ($logs = $logRepository->findAllByLevelAndTime($logLevel, (time() - $maxTime))) {
 
-                $mailText = '';
+                $logUtility->log($logUtility::LOG_INFO, 'Sending status report.');
 
+                $mailText = '';
                 /** @var \Madj2k\TwitterAnalyser\Model\Log $log */
                 foreach ($logs as $log) {
                     $mailText .= date ('Y-m-d H:i:s', $log->getCreateTimestamp()) .
@@ -45,11 +46,11 @@ try {
                 }
 
                 mail($SETTINGS['report']['email'] , 'TwitterAnalyser Status Report', $mailText);
-                $logUtility->log($logUtility::LOG_DEBUG, 'Sent status report.');
+
             }
 
             unlink(__DIR__ . '/../reporter.lock');
-            $logUtility->log($logUtility::LOG_DEBUG, 'Done.');
+            $logUtility->log($logUtility::LOG_INFO, 'Finished sending status report.');
 
         } else {
             $logUtility->log($logUtility::LOG_WARNING, 'Script is already running.');
