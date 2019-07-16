@@ -99,13 +99,13 @@ class TweetImportUtility
             // if $type is not 'timeline' we create an account based on the data and mark it as secondary - but only if it does not exist!
             } else {
 
-                /** @var \Madj2k\TwitterAnalyser\Model\Account $secondaryAccount */
+                /** @var \Madj2k\TwitterAnalyser\Model\Account $secondaryAccountDatabase */
                 if ($secondaryAccountDatabase = $this->accountRepository->findOneByUserName($object->user->screen_name, false)) {
                     $secondaryAccountDatabase->_injectData($object->user, false);
 
                     // set isSecondary only if it is a suggestion
                     if ($secondaryAccountDatabase->getIsSuggestion()) {
-                        $secondaryAccount->setIsSecondary(true);
+                        $secondaryAccountDatabase->setIsSecondary(true);
                     }
 
                     $this->accountRepository->update($secondaryAccountDatabase);
