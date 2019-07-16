@@ -30,7 +30,7 @@
                     <?php
                         /** @var \Madj2k\TwitterAnalyser\Model\Account $account */
                         foreach ($allAccounts as $account) {
-                            echo '<option ' . (intval ($account->getUid()) == intval($_POST['account']) ? 'selected="selected"' : '' ) . 'value="' . intval($account->getUid()) . '">' . $account->getUserName() . '</option>';
+                            echo '<option ' . (intval ($account->getUid()) == intval($_POST['account']) ? 'selected="selected"' : '' ) . 'value="' . intval($account->getUid()) . '">' . $account->getName()  . ' (@' . $account->getUserName() . ')</option>';
                         }
                     ?>
                 </select>

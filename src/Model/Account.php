@@ -58,6 +58,11 @@ class Account extends ModelAbstract
     protected $suggestionForName = '';
 
     /**
+     * @var bool
+     */
+    protected $isSecondary = false;
+
+    /**
      * @var int
      */
     protected $createdAt = 0;
@@ -322,6 +327,29 @@ class Account extends ModelAbstract
     public function setSuggestionForName($suggestionForName)
     {
         $this->suggestionForName = $suggestionForName;
+        return $this;
+    }
+
+    /**
+     * Gets isSecondary
+     *
+     * @return bool
+     */
+    public function getIsSecondary()
+    {
+        return $this->isSecondary;
+    }
+
+
+    /**
+     * Sets isSecondary
+     *
+     * @param bool $isSecondary
+     * @return $this
+     */
+    public function setIsSecondary($isSecondary)
+    {
+        $this->isSecondary = boolval($isSecondary);
         return $this;
     }
 

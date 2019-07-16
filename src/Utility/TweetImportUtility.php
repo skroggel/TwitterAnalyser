@@ -90,9 +90,31 @@ class TweetImportUtility
 
             // if $type is 'timeline' we also update the given account
             if ($type == 'timeline') {
+
                 $account->_injectData($object->user, false);
                 $this->accountRepository->update($account);
                 $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Updated account info for user %s in database.', $account->getUserName()));
+
+
+            // if $type is not 'timeline' we create an account based on the data and mark it as secondary
+            } else {
+
+                /** @var \Madj2k\TwitterAnalyser\Model\Account $secondaryAccount */
+                if ($secondaryAccount = $this->accountRepository->findOneByUserName($object->user->screen_name, false)) {
+                    $secondaryAccount->_injectData($object->user, false);
+                    $secondaryAccount->setIsSecondary(true);
+
+                    $this->accountRepository->update($secondaryAccount);
+                    $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Updated secondary account info for user %s in database.', $secondaryAccount->getUserName()));
+
+                } else {
+
+                    $secondaryAccount = new \Madj2k\TwitterAnalyser\Model\Account($object->user);
+                    $secondaryAccount->setIsSecondary(true);
+
+                    $this->accountRepository->insert($secondaryAccount);
+                    $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Inserted secondary account info for user %s into database.', $secondaryAccount->getUserName()));
+                }
             }
         }
 

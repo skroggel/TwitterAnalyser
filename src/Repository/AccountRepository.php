@@ -33,13 +33,43 @@ class AccountRepository extends RepositoryAbstract
             $timeWhere = 'AND created_at <= ' . intval($toTime);
         }
 
-        $sql = 'SELECT * FROM ' . $this->table . ' WHERE is_suggestion = 0 AND uid = ? ' . $timeWhere;
+        $sql = 'SELECT * FROM ' . $this->table . ' WHERE is_suggestion = 0 AND is_secondary = 0 AND uid = ? ' . $timeWhere;
 
         /** @var \Madj2k\TwitterAnalyser\Model\Account $result
         $result = $this->_findOne($sql, [$uid]);
         return $result;
     }
     */
+
+    /**
+     * Count all but no suggestions and no secondary accounts
+     *
+     * @return array|null
+     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     */
+    public function countAll ()
+    {
+
+        $sql = 'SELECT COUNT(uid) FROM ' . $this->table . ' WHERE is_suggestion = 0 AND is_secondary = 0';
+
+        $result = $this->_countAll($sql, []);
+        return $result;
+    }
+
+    /**
+     * Find all but no suggestions and no secondary accounts
+     *
+     * @return array|null
+     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     */
+    public function findAll ()
+    {
+
+        $sql = 'SELECT * FROM ' . $this->table . ' WHERE is_suggestion = 0 AND is_secondary = 0 ORDER BY name ASC';
+
+        $result = $this->_findAll($sql, []);
+        return $result;
+    }
 
 
     /**
@@ -52,7 +82,7 @@ class AccountRepository extends RepositoryAbstract
     public function findAllSortedByLastFetchTimeline (int $limit)
     {
 
-        $sql = 'SELECT * FROM ' . $this->table . ' WHERE is_suggestion = 0 ORDER BY fetch_timeline_timestamp ASC LIMIT ' . intval($limit);
+        $sql = 'SELECT * FROM ' . $this->table . ' WHERE is_suggestion = 0 AND is_secondary = 0 ORDER BY fetch_timeline_timestamp ASC LIMIT ' . intval($limit);
 
         $result = $this->_findAll($sql, []);
         return $result;
@@ -68,7 +98,7 @@ class AccountRepository extends RepositoryAbstract
     public function findAllSortedByLastFetchAddressed (int $limit)
     {
 
-        $sql = 'SELECT * FROM ' . $this->table . ' WHERE is_suggestion = 0 ORDER BY fetch_addressed_timestamp ASC LIMIT ' . intval($limit);
+        $sql = 'SELECT * FROM ' . $this->table . ' WHERE is_suggestion = 0 AND is_secondary = 0 ORDER BY fetch_addressed_timestamp ASC LIMIT ' . intval($limit);
 
         $result = $this->_findAll($sql, []);
         return $result;

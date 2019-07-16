@@ -215,6 +215,7 @@ class TwitterAnalyser
             'result_type=recent',
             'count=100',
             'tweet_mode=extended',
+            'include_entities=true'
         ];
 
         // get pagination

@@ -40,6 +40,7 @@ The URL to a contact list in HTML format, which in turn contains links to the de
 In the concrete case of application, the list of members of the German Bundestag was used as available on www.bundestag.de.
 
 The importer then searches the given contact list for links to detail pages based on a definable pattern. On the detail pages the importer then searches for links to Twitter accounts and imports the found Twitter account-names into the database.
+If the importer does not find a link to a Twitter account, an attempt is made to find the clear name on the detail page and to get a Twitter account using the Twitter API.
 
 In order to keep the load on the target server low and to avoid a blocking of the IP, the links to the detail pages are processed bit by bit.
 For this reason it is necessary to set up a cronjob.
@@ -49,18 +50,19 @@ The Importer accepts the following parameters:
 * **baseUrl**: Base URL of the contact list and the detail pages (default: `https://www.bundestag.de`)
 * **regExpDetailLinks**: Regular expression for extracting the links to the detail pages (default: `#<a[^>]+href="(/delegates/biographies/[^"]+)"[^>]+>#`),
 * **regExpTwitterLinks**: Regular expression for extracting the links to the Twitter accounts on the detail pages (default: `#<a[^>]+href="(https://(www.)?twitter.com/[^"]+)"[^>]+>#`)
+* **regExpNames**: Regular expression for extracting names on the detail pages. This is used as alternative to search Twitter accounts via clear name  (default: `#<div class="[^"]+ bt-biografie-name">[^<]*<h3>([^<]+)</h3>#`)
 * **maxLinksLimit**: Maximum number of detail links to be processed per call (default: `10`)
 * **checkInterval**: Interval in which the contact list is checked again, in seconds (default: `604800` = 1 week)
 
 Example using the CLI:
 ```
-php7.2 /var/www/diss/cli/importer.php 'https://www.bundestag.de/ajax/filterlist/de/abgeordnete/525246-525246/h_e3c112579919ef960d06dbb9d0d44b67?limit=9999&view=BTBiographyList' 'https://www.bundestag.de' '#<a[^>]+href="(/members/biographies/[^"]+)"[^>]+>#' '#<a[^>]+href="(https://(www.)?twitter.com/[^"]+)"[^>]+>#'
+php7.2 /var/www/diss/cli/importer.php 'https://www.bundestag.de/ajax/filterlist/de/abgeordnete/525246-525246/h_e3c112579919ef960d06dbb9d0d44b67?limit=9999&view=BTBiographyList' 'https://www.bundestag.de' '#<a[^>]+href="(/abgeordnete/biografien/[^"]+)"[^>]+>#' '#<a[^>]+href="(https://(www.)?twitter.com/[^"]+)"[^>]+>#' '#<div class="[^"]+ bt-biografie-name">[^<]*<h3>([^<]+)</h3>#'
 ```
 
 Example for the setup of a cronjob: 
 ```
 # m h dom mon mon dow command
-*/5 * * * * * /usr/bin/php7.2 /var/www/diss/cli/importer.php 'https://www.bundestag.de/ajax/filterlist/de/abgeordnete/525246-525246/h_e3c112579919ef960d06dbb9d0d44b67?limit=9999&view=BTBiographyList' 'https://www.bundestag.de' '#<a[^>]+href="(/members/biographies/[^"]+)"[^>]+>#' '#<a[^>]+href="(https://(www.)?twitter.com/[^"]+)"[^>]+>#' > /dev/null
+*/5 * * * * /usr/bin/php7.2 /var/www/diss/cli/importer.php 'https://www.bundestag.de/ajax/filterlist/de/abgeordnete/525246-525246/h_e3c112579919ef960d06dbb9d0d44b67?limit=9999&view=BTBiographyList' 'https://www.bundestag.de' '#<a[^>]+href="(/abgeordnete/biografien/[^"]+)"[^>]+>#' '#<a[^>]+href="(https://(www.)?twitter.com/[^"]+)"[^>]+>#' '#<div class="[^"]+ bt-biografie-name">[^<]*<h3>([^<]+)</h3>#' > /dev/null
 ```
 
 ## Fetcher (fetcher.php)
@@ -144,6 +146,7 @@ Der Importer wird über das CLI ausgeführt und dient dazu, eine gegebenene Kont
 Im konkreten Anwendungsfall wurde hier die Liste der Abgeordneten des Deutschen Bundestages auf www.bundestag.de übergeben.
 
 Der Importer sucht in der übergebenen Kontaktliste dann basierend auf einem definierbaren Muster nach Links zu Detailseiten. Auf den Detailseiten wiederum sucht der Importer dann nach Links zu Twitter-Accounts und import die gefundenen Twitter-Accountnamen in die Datenbank.
+Findet der Importer keinen Link zu einem Twitter-Account wird versucht, den Klarnamen auf der Detailseite zu finden und basierend darauf über die Twitter-API einen Twitter-Account zu ermitteln.
 
 Um die Last auf dem Zielserver gering zu halten und eine Sperrung der IP durch den Betreiber zu vermeiden, werden die Links zu den Detailseiten nach und nach abgearbeitet.
 Hierfür ist daher die Einrichtung eines Cronjobs notwendig.
@@ -153,18 +156,19 @@ Der Importer nimmt folgende Parameter entgegen:
 * **baseUrl**: Base-URL der Kontaktliste und der Detailseiten (default: `https://www.bundestag.de`)
 * **regExpDetailLinks**: Regulärer Ausdruck für das Extrahieren der Links zu den Detailseiten (default: `#<a[^>]+href="(/abgeordnete/biografien/[^"]+)"[^>]+>#`),
 * **regExpTwitterLinks**: Regulärer Ausdruck für das Extrahieren der Links zu den Twitter-Accounts auf den Detailseiten (default: `#<a[^>]+href="(https://(www.)?twitter.com/[^"]+)"[^>]+>#`)
+* **regExpNames**: Regulärer Ausdruck für das Extrahieren von Klarnamen auf den Detailseiten. Dies wird als Alternative verwendet, um mit der Twitter API über den Klarnamen nach einem Twitter-Account zu suchen (default: `#<div class="[^"]+ bt-biografie-name">[^<]*<h3>([^<]+)</h3>#`)
 * **maxLinksLimit**: Maximale Anzahl der abzuarbeitenden Detail-Links je Aufruf (default: `10`)
 * **checkInterval**: Interval, in der die Kontaktliste erneut geprüft wird, in Sekunden (default: `604800` = 1 Woche)
 
 Beispiel-Aufruf über das CLI:
 ```
-php7.2 /var/www/diss/cli/importer.php 'https://www.bundestag.de/ajax/filterlist/de/abgeordnete/525246-525246/h_e3c112579919ef960d06dbb9d0d44b67?limit=9999&view=BTBiographyList' 'https://www.bundestag.de' '#<a[^>]+href="(/abgeordnete/biografien/[^"]+)"[^>]+>#' '#<a[^>]+href="(https://(www.)?twitter.com/[^"]+)"[^>]+>#'
+php7.2 /var/www/diss/cli/importer.php 'https://www.bundestag.de/ajax/filterlist/de/abgeordnete/525246-525246/h_e3c112579919ef960d06dbb9d0d44b67?limit=9999&view=BTBiographyList' 'https://www.bundestag.de' '#<a[^>]+href="(/abgeordnete/biografien/[^"]+)"[^>]+>#' '#<a[^>]+href="(https://(www.)?twitter.com/[^"]+)"[^>]+>#' '#<div class="[^"]+ bt-biografie-name">[^<]*<h3>([^<]+)</h3>#'
 ```
 
 Beispiel für die Einrichtung eines Cronjobs: 
 ```
 # m h  dom mon dow   command
-*/5 * * * * /usr/bin/php7.2 /var/www/diss/cli/importer.php 'https://www.bundestag.de/ajax/filterlist/de/abgeordnete/525246-525246/h_e3c112579919ef960d06dbb9d0d44b67?limit=9999&view=BTBiographyList' 'https://www.bundestag.de' '#<a[^>]+href="(/abgeordnete/biografien/[^"]+)"[^>]+>#' '#<a[^>]+href="(https://(www.)?twitter.com/[^"]+)"[^>]+>#' > /dev/null
+*/5 * * * * /usr/bin/php7.2 /var/www/diss/cli/importer.php 'https://www.bundestag.de/ajax/filterlist/de/abgeordnete/525246-525246/h_e3c112579919ef960d06dbb9d0d44b67?limit=9999&view=BTBiographyList' 'https://www.bundestag.de' '#<a[^>]+href="(/abgeordnete/biografien/[^"]+)"[^>]+>#' '#<a[^>]+href="(https://(www.)?twitter.com/[^"]+)"[^>]+>#' '#<div class="[^"]+ bt-biografie-name">[^<]*<h3>([^<]+)</h3>#' > /dev/null
 ```
 
 ## Fetcher (fetcher.php)

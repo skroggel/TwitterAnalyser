@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS `account` (
   `created_at` int(11) NOT NULL DEFAULT '0',
   `verified` tinyint(1) NOT NULL DEFAULT '0',
   `is_suggestion` tinyint(1) NOT NULL DEFAULT '0',
+  `suggestion_for_name` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_secondary` tinyint(1) NOT NULL DEFAULT '0',
   `followers_count` int(11) NOT NULL DEFAULT '0',
   `friends_count` int(11) NOT NULL DEFAULT '0',
   `listed_count` int(11) NOT NULL DEFAULT '0',
