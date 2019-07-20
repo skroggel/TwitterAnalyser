@@ -49,20 +49,20 @@ The Importer accepts the following parameters:
 * **url**: URL to the contact list as HTML page (default: `https://www.bundestag.de/ajax/filterlist/de/abgeordnete/525246-525246/h_e3c112579919ef960d06dbb9d0d44b67?limit=9999&view=BTBiographyList`)
 * **baseUrl**: Base URL of the contact list and the detail pages (default: `https://www.bundestag.de`)
 * **regExpDetailLinks**: Regular expression for extracting the links to the detail pages (default: `#<a[^>]+href="(/delegates/biographies/[^"]+)"[^>]+>#`),
-* **regExpTwitterLinks**: Regular expression for extracting the links to the Twitter accounts on the detail pages (default: `#<a[^>]+href="(https://(www.)?twitter.com/[^"]+)"[^>]+>#`)
+* **regExpTwitterLinks**: Regular expression for extracting the links to the Twitter accounts on the detail pages (default: `#<a[^>]+href="http[s]?://[^\.]*\.?twitter\.com/(@?(\w){1,15})[^"]*"[^>]+>#`)
 * **regExpNames**: Regular expression for extracting names on the detail pages. This is used as alternative to search Twitter accounts via clear name  (default: `#<div class="[^"]+ bt-biografie-name">[^<]*<h3>([^<]+)</h3>#`)
 * **maxLinksLimit**: Maximum number of detail links to be processed per call (default: `10`)
 * **checkInterval**: Interval in which the contact list is checked again, in seconds (default: `604800` = 1 week)
 
 Example using the CLI:
 ```
-php7.2 /var/www/diss/cli/importer.php 'https://www.bundestag.de/ajax/filterlist/de/abgeordnete/525246-525246/h_e3c112579919ef960d06dbb9d0d44b67?limit=9999&view=BTBiographyList' 'https://www.bundestag.de' '#<a[^>]+href="(/abgeordnete/biografien/[^"]+)"[^>]+>#' '#<a[^>]+href="(https://(www.)?twitter.com/[^"]+)"[^>]+>#' '#<div class="[^"]+ bt-biografie-name">[^<]*<h3>([^<]+)</h3>#'
+php7.2 /var/www/diss/cli/importer.php 'https://www.bundestag.de/ajax/filterlist/de/abgeordnete/525246-525246/h_e3c112579919ef960d06dbb9d0d44b67?limit=9999&view=BTBiographyList' 'https://www.bundestag.de' '#<a[^>]+href="(/abgeordnete/biografien/[^"]+)"[^>]+>#' '#<a[^>]+href="http[s]?://[^\.]*\.?twitter\.com/(@?(\w){1,15})[^"]*"[^>]+>#' '#<div class="[^"]+ bt-biografie-name">[^<]*<h3>([^<]+)</h3>#'
 ```
 
 Example for the setup of a cronjob: 
 ```
 # m h dom mon mon dow command
-*/5 * * * * /usr/bin/php7.2 /var/www/diss/cli/importer.php 'https://www.bundestag.de/ajax/filterlist/de/abgeordnete/525246-525246/h_e3c112579919ef960d06dbb9d0d44b67?limit=9999&view=BTBiographyList' 'https://www.bundestag.de' '#<a[^>]+href="(/abgeordnete/biografien/[^"]+)"[^>]+>#' '#<a[^>]+href="(https://(www.)?twitter.com/[^"]+)"[^>]+>#' '#<div class="[^"]+ bt-biografie-name">[^<]*<h3>([^<]+)</h3>#' > /dev/null
+*/5 * * * * /usr/bin/php7.2 /var/www/diss/cli/importer.php 'https://www.bundestag.de/ajax/filterlist/de/abgeordnete/525246-525246/h_e3c112579919ef960d06dbb9d0d44b67?limit=9999&view=BTBiographyList' 'https://www.bundestag.de' '#<a[^>]+href="(/abgeordnete/biografien/[^"]+)"[^>]+>#' '#<a[^>]+href="http[s]?://[^\.]*\.?twitter\.com/(@?(\w){1,15})[^"]*"[^>]+>#' '#<div class="[^"]+ bt-biografie-name">[^<]*<h3>([^<]+)</h3>#' > /dev/null
 ```
 
 ## Fetcher (fetcher.php)
@@ -155,20 +155,20 @@ Der Importer nimmt folgende Parameter entgegen:
 * **url**: URL zur Kontaktliste als HTML-Seite (default: `https://www.bundestag.de/ajax/filterlist/de/abgeordnete/525246-525246/h_e3c112579919ef960d06dbb9d0d44b67?limit=9999&view=BTBiographyList`)
 * **baseUrl**: Base-URL der Kontaktliste und der Detailseiten (default: `https://www.bundestag.de`)
 * **regExpDetailLinks**: Regulärer Ausdruck für das Extrahieren der Links zu den Detailseiten (default: `#<a[^>]+href="(/abgeordnete/biografien/[^"]+)"[^>]+>#`),
-* **regExpTwitterLinks**: Regulärer Ausdruck für das Extrahieren der Links zu den Twitter-Accounts auf den Detailseiten (default: `#<a[^>]+href="(https://(www.)?twitter.com/[^"]+)"[^>]+>#`)
+* **regExpTwitterLinks**: Regulärer Ausdruck für das Extrahieren der Links zu den Twitter-Accounts auf den Detailseiten (default: `#<a[^>]+href="http[s]?://[^\.]*\.?twitter\.com/(@?(\w){1,15})[^"]*"[^>]+>#`)
 * **regExpNames**: Regulärer Ausdruck für das Extrahieren von Klarnamen auf den Detailseiten. Dies wird als Alternative verwendet, um mit der Twitter API über den Klarnamen nach einem Twitter-Account zu suchen (default: `#<div class="[^"]+ bt-biografie-name">[^<]*<h3>([^<]+)</h3>#`)
 * **maxLinksLimit**: Maximale Anzahl der abzuarbeitenden Detail-Links je Aufruf (default: `10`)
 * **checkInterval**: Interval, in der die Kontaktliste erneut geprüft wird, in Sekunden (default: `604800` = 1 Woche)
 
 Beispiel-Aufruf über das CLI:
 ```
-php7.2 /var/www/diss/cli/importer.php 'https://www.bundestag.de/ajax/filterlist/de/abgeordnete/525246-525246/h_e3c112579919ef960d06dbb9d0d44b67?limit=9999&view=BTBiographyList' 'https://www.bundestag.de' '#<a[^>]+href="(/abgeordnete/biografien/[^"]+)"[^>]+>#' '#<a[^>]+href="(https://(www.)?twitter.com/[^"]+)"[^>]+>#' '#<div class="[^"]+ bt-biografie-name">[^<]*<h3>([^<]+)</h3>#'
+php7.2 /var/www/diss/cli/importer.php 'https://www.bundestag.de/ajax/filterlist/de/abgeordnete/525246-525246/h_e3c112579919ef960d06dbb9d0d44b67?limit=9999&view=BTBiographyList' 'https://www.bundestag.de' '#<a[^>]+href="(/abgeordnete/biografien/[^"]+)"[^>]+>#' '#<a[^>]+href="http[s]?://[^\.]*\.?twitter\.com/(@?(\w){1,15})[^"]*"[^>]+>#' '#<div class="[^"]+ bt-biografie-name">[^<]*<h3>([^<]+)</h3>#'
 ```
 
 Beispiel für die Einrichtung eines Cronjobs: 
 ```
 # m h  dom mon dow   command
-*/5 * * * * /usr/bin/php7.2 /var/www/diss/cli/importer.php 'https://www.bundestag.de/ajax/filterlist/de/abgeordnete/525246-525246/h_e3c112579919ef960d06dbb9d0d44b67?limit=9999&view=BTBiographyList' 'https://www.bundestag.de' '#<a[^>]+href="(/abgeordnete/biografien/[^"]+)"[^>]+>#' '#<a[^>]+href="(https://(www.)?twitter.com/[^"]+)"[^>]+>#' '#<div class="[^"]+ bt-biografie-name">[^<]*<h3>([^<]+)</h3>#' > /dev/null
+*/5 * * * * /usr/bin/php7.2 /var/www/diss/cli/importer.php 'https://www.bundestag.de/ajax/filterlist/de/abgeordnete/525246-525246/h_e3c112579919ef960d06dbb9d0d44b67?limit=9999&view=BTBiographyList' 'https://www.bundestag.de' '#<a[^>]+href="(/abgeordnete/biografien/[^"]+)"[^>]+>#' '#<a[^>]+href="http[s]?://[^\.]*\.?twitter\.com/(@?(\w){1,15})[^"]*"[^>]+>#' '#<div class="[^"]+ bt-biografie-name">[^<]*<h3>([^<]+)</h3>#' > /dev/null
 ```
 
 ## Fetcher (fetcher.php)

@@ -130,9 +130,8 @@ class TwitterAccountFinder
      * @return int|false
      * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
      */
-    public function fetchAccountNamesFromDetailLinks ($regExpTwitterLinks = '#<a[^>]+href="(https://(www.)?twitter.com/[^"]+)"[^>]+>#', $regExpNames = '#<div class="[^"]+ bt-biografie-name">[^<]*<h3>([^<]+)</h3>#', $limit = 10)
+    public function fetchAccountNamesFromDetailLinks ($regExpTwitterLinks = '#<a[^>]+href="http[s]?://[^\.]*\.?twitter\.com/(@?(\w){1,15})[^"]*"[^>]+>#', $regExpNames = '#<div class="[^"]+ bt-biografie-name">[^<]*<h3>([^<]+)</h3>#', $limit = 10)
     {
-
 
         // Get rate limit for user search API and fetch an according amount of urls
         if ($rateLimit = $this->rateLimitUtility->getRateLimitForMethod('users', 'search')) {
@@ -153,10 +152,8 @@ class TwitterAccountFinder
                         // 1. Check for Twitter-Links
                         if (
                             (preg_match($regExpTwitterLinks, $detailPage, $matches))
-                            && ($twitterLink = $matches[1])
+                            && ($userName = $matches[1])
                         ) {
-
-                            $userName = str_replace(['/', '@'], '', parse_url($twitterLink, PHP_URL_PATH));
 
                             /** @var \Madj2k\TwitterAnalyser\Model\Account $account */
                             $account = new Account();
@@ -171,11 +168,17 @@ class TwitterAccountFinder
 
                             } else {
 
-                                // if it is a secondary account it now becomes a primary one!
-                                if ($databaseAccount->getIsSecondary()) {
+                                // if it is a secondary account or a suggestion it now becomes a primary one!
+                                if (
+                                    ($databaseAccount->getIsSecondary())
+                                    || ($databaseAccount->getIsSuggestion())
+                                ){
                                     $databaseAccount->setIsSecondary(false);
+                                    $databaseAccount->setIsSuggestion(false);
+                                    $databaseAccount->setSuggestionForName('');
+
                                     $this->accountRepository->update($databaseAccount);
-                                    $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Account %s found in url with id = %s already exists as secondary account. Set to primary account now.', $account->getUserName(), $url->getUid()));
+                                    $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Account %s found in url with id = %s already exists as secondary or suggestion account. Set to primary account now.', $account->getUserName(), $url->getUid()));
 
                                 } else {
                                     $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Account %s found in url with id = %s already exists.', $account->getUserName(), $url->getUid()));
@@ -229,6 +232,11 @@ class TwitterAccountFinder
                                         $account = new Account($foundAccount);
                                         $account->setIsSuggestion(true)
                                             ->setSuggestionForName($name);
+
+                                        // only take verified accounts as suggestions
+                                        if (! $account->getVerified()) {
+                                            continue;
+                                        }
 
                                         /** @var \Madj2k\TwitterAnalyser\Model\Account $databaseAccount */
                                         $databaseAccount = $this->accountRepository->findOneByUserName($account->getUserName(), false);

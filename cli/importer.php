@@ -23,7 +23,7 @@ try {
                 'url' => (isset($argv[1]) ? $argv[1] : 'https://www.bundestag.de/ajax/filterlist/de/abgeordnete/525246-525246/h_e3c112579919ef960d06dbb9d0d44b67?limit=9999&view=BTBiographyList'),
                 'baseUrl' => (isset($argv[2]) ? $argv[2] : 'https://www.bundestag.de'),
                 'regExpDetailLinks' => (isset($argv[3]) ? $argv[3] : '#<a[^>]+href="(/abgeordnete/biografien/[^"]+)"[^>]+>#'),
-                'regExpTwitterLinks' => (isset($argv[4]) ? $argv[4] : '#<a[^>]+href="(https://(www.)?twitter.com/[^"]+)"[^>]+>#'),
+                'regExpTwitterLinks' => (isset($argv[4]) ? $argv[4] : '#<a[^>]+href="http[s]?://[^\.]*\.?twitter\.com/(@?(\w){1,15})[^"]*"[^>]+>#'),
                 'regExpNames' => (isset($argv[5]) ? $argv[5] : '#<div class="[^"]+ bt-biografie-name">[^<]*<h3>([^<]+)</h3>#'),
                 'maxLinksLimit' => (isset($argv[6]) ? $argv[6] : 10),
                 'checkInterval'=> (isset($argv[7]) ? $argv[7] : 604800),
