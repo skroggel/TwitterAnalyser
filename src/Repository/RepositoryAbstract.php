@@ -326,7 +326,7 @@ abstract class RepositoryAbstract
                 return $result;
             } else {
                 $error = $sth->errorInfo();
-                throw new RepositoryException($error[2]);
+                throw new RepositoryException($error[2] . ' on execution of "' . $sth->queryString . '" with params ' .  print_r($insertProperties, true));
             }
         }
 
@@ -377,7 +377,7 @@ abstract class RepositoryAbstract
                 //===
             } else {
                 $error = $sth->errorInfo();
-                throw new RepositoryException($error[2]);
+                throw new RepositoryException($error[2] . ' on execution of "' . $sth->queryString . '" with params ' .  print_r($updateProperties, true));
             }
         }
 

@@ -95,26 +95,25 @@ class TweetImportUtility
                 $this->accountRepository->update($account);
                 $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Updated account info for user %s in database.', $account->getUserName()));
 
-
             // if $type is not 'timeline' we create an account based on the data and mark it as secondary - but only if it does not exist!
             } else {
 
+                /** @var \Madj2k\TwitterAnalyser\Model\Account $secondaryAccount */
+                $secondaryAccount = new \Madj2k\TwitterAnalyser\Model\Account($object->user);
+                $secondaryAccount->setIsSecondary(true);
+
                 /** @var \Madj2k\TwitterAnalyser\Model\Account $secondaryAccountDatabase */
-                if ($secondaryAccountDatabase = $this->accountRepository->findOneByUserName($object->user->screen_name, false)) {
-                    $secondaryAccountDatabase->_injectData($object->user, false);
+                if ($secondaryAccountDatabase = $this->accountRepository->findOneByUserName($secondaryAccount->getUserName(), false)) {
 
-                    // set isSecondary only if it is a suggestion
+                    // set isSecondary on existing account only if it is a suggestion
                     if ($secondaryAccountDatabase->getIsSuggestion()) {
-                        $secondaryAccountDatabase->setIsSecondary(true);
-                    }
+                       $secondaryAccountDatabase->_injectData($object->user, false);
+                       $secondaryAccountDatabase->setIsSecondary(true);
 
-                    $this->accountRepository->update($secondaryAccountDatabase);
-                    $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Updated secondary account info for user %s in database.', $secondaryAccountDatabase->getUserName()));
-
-                } else {
-
-                    $secondaryAccount = new \Madj2k\TwitterAnalyser\Model\Account($object->user);
-                    $secondaryAccount->setIsSecondary(true);
+                       $this->accountRepository->update($secondaryAccountDatabase);
+                       $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Updated secondary account info for user %s in database.', $secondaryAccountDatabase->getUserName()));
+                   }
+                } else if (! $secondaryAccountDatabase){
 
                     $this->accountRepository->insert($secondaryAccount);
                     $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Inserted secondary account info for user %s into database.', $secondaryAccount->getUserName()));

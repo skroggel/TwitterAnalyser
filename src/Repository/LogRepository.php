@@ -25,7 +25,7 @@ class LogRepository extends RepositoryAbstract
     public function findAllByLevelAndTime (int $level, int $maxTime = 0)
     {
 
-        $sql = 'SELECT * FROM ' . $this->table . ' WHERE level >= ? AND create_timestamp >= ? ORDER BY create_timestamp ASC';
+        $sql = 'SELECT * FROM ' . $this->table . ' WHERE level >= ? AND create_timestamp >= ? ORDER BY create_timestamp DESC';
 
         $result = $this->_findAll($sql, [$level, $maxTime]);
         return $result;

@@ -71,11 +71,11 @@ abstract class ModelAbstract
 
         // get properties and their initial values
         $existingProperties = get_object_vars($this);
-        foreach ($existingProperties as $existingProperty => $initialValue) {
-            if (strpos($existingProperty, '_') === 0) {
-                continue;
-            }
-            if ($initialValues) {
+        if ($initialValues) {
+            foreach ($existingProperties as $existingProperty => $initialValue) {
+                if (strpos($existingProperty, '_') === 0) {
+                    continue;
+                }
                 $this->_initProperties[$existingProperty] = $initialValue;
             }
         }

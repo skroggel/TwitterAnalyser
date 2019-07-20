@@ -23,7 +23,6 @@ CREATE TABLE IF NOT EXISTS `account` (
   `deleted` tinyint(1) NOT NULL DEFAULT '0',
 
   PRIMARY KEY (uid),
-  UNIQUE KEY `user_name` (`user_name`),
   KEY `fetch_timeline_timestamp` (`fetch_timeline_timestamp`),
   KEY `fetch_addressed_timestamp` (`fetch_addressed_timestamp`),
   KEY `created_at` (`created_at`)
