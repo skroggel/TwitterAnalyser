@@ -25,7 +25,7 @@ class TweetRepository extends RepositoryAbstract
      * @return array|null
      * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
      */
-    public function findAllByAccountAndTypeAndTimeOrderedByCreateAt(\Madj2k\TwitterAnalyser\Model\Account $account, string $type = 'timeline', int $fromTime = 0, int $toTime = 0)
+    public function findByAccountAndTypeAndTimeOrderedByCreateAt(\Madj2k\TwitterAnalyser\Model\Account $account, string $type = 'timeline', int $fromTime = 0, int $toTime = 0)
     {
 
         $timeWhere = '';
@@ -51,7 +51,7 @@ class TweetRepository extends RepositoryAbstract
      * @return array|null
      * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
      */
-    public function findAllByInReplyToTweetIdOrderedByCreateAt($tweetId)
+    public function findByInReplyToTweetIdOrderedByCreateAt($tweetId)
     {
 
         $sql = 'SELECT * FROM ' . $this->table . ' WHERE is_reply = 1 AND in_reply_to_tweet_id = ? ORDER BY created_at ASC';

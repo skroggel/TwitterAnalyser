@@ -103,4 +103,21 @@ class AccountRepository extends RepositoryAbstract
         $result = $this->_findAll($sql, []);
         return $result;
     }
+
+    /**
+     * Find all suggestions
+     *
+     * @param bool $suggestion
+     * @return array|null
+     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     */
+    public function findBySuggestionOrderedBySuggestionForNameAndName (bool $suggestion = true)
+    {
+
+        $sql = 'SELECT * FROM ' . $this->table . ' WHERE is_suggestion = ' . intval($suggestion) . ' AND is_secondary = 0 ORDER BY suggestion_for_name, name ASC';
+
+        $result = $this->_findAll($sql, []);
+        return $result;
+    }
+
 }

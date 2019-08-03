@@ -55,7 +55,7 @@ class TweetListView
     public function render (\Madj2k\TwitterAnalyser\Model\Account $account, int $fromTime = 0, int $toTime = 0)
     {
         $html = '';
-        if ($tweets = $this->tweetRepository->findAllByAccountAndTypeAndTimeOrderedByCreateAt($account, 'timeline', $fromTime, $toTime)) {
+        if ($tweets = $this->tweetRepository->findByAccountAndTypeAndTimeOrderedByCreateAt($account, 'timeline', $fromTime, $toTime)) {
 
             $html = '<ol class="tweet-list" >';
 
@@ -91,7 +91,7 @@ class TweetListView
             }
         }
 
-        if ($subTweets = $this->tweetRepository->findAllByInReplyToTweetIdOrderedByCreateAt($tweet->getTweetId())) {
+        if ($subTweets = $this->tweetRepository->findByInReplyToTweetIdOrderedByCreateAt($tweet->getTweetId())) {
 
             $html .= '<ol class="tweet-sublist" >';
 

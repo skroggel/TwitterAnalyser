@@ -24,6 +24,7 @@
             <?php
                 $allAccounts = $accountRepository->findAll();
             ?>
+            <p>Sum: <?php echo count($allAccounts) ?></p>
             <label><span>Account:</span>
                 <select name="account">
                     <option value="">---</option>

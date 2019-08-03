@@ -33,7 +33,7 @@ try {
             touch(__DIR__ . '/../reporter.last');
 
             $logRepository = new \Madj2k\TwitterAnalyser\Repository\LogRepository();
-            if ($logs = $logRepository->findAllByLevelAndTime($logLevel, (time() - $maxTime))) {
+            if ($logs = $logRepository->findByLevelAndTime($logLevel, (time() - $maxTime))) {
 
                 $logUtility->log($logUtility::LOG_INFO, 'Sending status report.');
 

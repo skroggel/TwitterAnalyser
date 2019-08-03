@@ -22,7 +22,7 @@ class LogRepository extends RepositoryAbstract
      * @return array|null
      * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
      */
-    public function findAllByLevelAndTime (int $level, int $maxTime = 0)
+    public function findByLevelAndTime (int $level, int $maxTime = 0)
     {
 
         $sql = 'SELECT * FROM ' . $this->table . ' WHERE level >= ? AND create_timestamp >= ? ORDER BY create_timestamp DESC';
