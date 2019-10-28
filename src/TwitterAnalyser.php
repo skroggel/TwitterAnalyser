@@ -190,7 +190,7 @@ class TwitterAnalyser
             }
             $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('No tweets available for user %s', $account->getUserName()));
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->logUtility->log($this->logUtility::LOG_ERROR, $e->getMessage());
         }
 
@@ -256,7 +256,7 @@ class TwitterAnalyser
 
             $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('No tweets available for user %s', $account->getUserName()));
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->logUtility->log($this->logUtility::LOG_ERROR, $e->getMessage());
         }
 

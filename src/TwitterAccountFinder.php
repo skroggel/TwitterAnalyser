@@ -147,70 +147,70 @@ class TwitterAccountFinder
                 foreach ($urlList as $url) {
 
                     $matches = [];
-                    if ($detailPage = $this->fetchData($url->getBaseUrl() . $url->getUrl())) {
+                    try {
+                        if ($detailPage = $this->fetchData($url->getBaseUrl() . $url->getUrl())) {
 
-                        // 1. Check for Twitter-Links
-                        if (
-                            (preg_match($regExpTwitterLinks, $detailPage, $matches))
-                            && ($userName = $matches[1])
-                        ) {
+                            // 1. Check for Twitter-Links
+                            if (
+                                (preg_match($regExpTwitterLinks, $detailPage, $matches))
+                                && ($userName = $matches[1])
+                            ) {
 
-                            /** @var \Madj2k\TwitterAnalyser\Model\Account $account */
-                            $account = new Account();
-                            $account->setUserName($userName);
+                                /** @var \Madj2k\TwitterAnalyser\Model\Account $account */
+                                $account = new Account();
+                                $account->setUserName($userName);
 
-                            /** @var \Madj2k\TwitterAnalyser\Model\Account $databaseAccount */
-                            $databaseAccount = $this->accountRepository->findOneByUserName($account->getUserName(), false);
-                            if (! $databaseAccount) {
-                                $this->accountRepository->insert($account);
-                                $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Inserted new account %s found in url with id = %s.', $account->getUserName(), $url->getUid()));
-                                $importCount++;
-
-                            } else {
-
-                                // if it is a secondary account or a suggestion it now becomes a primary one!
-                                if (
-                                    ($databaseAccount->getIsSecondary())
-                                    || ($databaseAccount->getIsSuggestion())
-                                ){
-                                    $databaseAccount->setIsSecondary(false);
-                                    $databaseAccount->setIsSuggestion(false);
-                                    $databaseAccount->setSuggestionForName('');
-
-                                    $this->accountRepository->update($databaseAccount);
-                                    $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Account %s found in url with id = %s already exists as secondary or suggestion account. Set to primary account now.', $account->getUserName(), $url->getUid()));
+                                /** @var \Madj2k\TwitterAnalyser\Model\Account $databaseAccount */
+                                $databaseAccount = $this->accountRepository->findOneByUserName($account->getUserName(), false);
+                                if (! $databaseAccount) {
+                                    $this->accountRepository->insert($account);
+                                    $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Inserted new account %s found in url with id = %s.', $account->getUserName(), $url->getUid()));
+                                    $importCount++;
 
                                 } else {
-                                    $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Account %s found in url with id = %s already exists.', $account->getUserName(), $url->getUid()));
+
+                                    // if it is a secondary account or a suggestion it now becomes a primary one!
+                                    if (
+                                        ($databaseAccount->getIsSecondary())
+                                        || ($databaseAccount->getIsSuggestion())
+                                    ){
+                                        $databaseAccount->setIsSecondary(false);
+                                        $databaseAccount->setIsSuggestion(false);
+                                        $databaseAccount->setSuggestionForName('');
+
+                                        $this->accountRepository->update($databaseAccount);
+                                        $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Account %s found in url with id = %s already exists as secondary or suggestion account. Set to primary account now.', $account->getUserName(), $url->getUid()));
+
+                                    } else {
+                                        $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Account %s found in url with id = %s already exists.', $account->getUserName(), $url->getUid()));
+                                    }
                                 }
-                            }
 
-                        // 2. Search via API by name
-                        } else if (
-                            (preg_match($regExpNames, $detailPage, $matches))
-                            && ($name = trim($matches[1]))
-                        ) {
+                            // 2. Search via API by name
+                            } else if (
+                                (preg_match($regExpNames, $detailPage, $matches))
+                                && ($name = trim($matches[1]))
+                            ) {
 
-                            // remove comma appendix
-                            if (false !== $pos = strpos($name, ',')) {
-                                $name = trim(substr($name, 0, $pos));
-                            }
+                                // remove comma appendix
+                                if (false !== $pos = strpos($name, ',')) {
+                                    $name = trim(substr($name, 0, $pos));
+                                }
 
-                            // remove title prefix
-                            if (false !== $pos = strpos($name, 'Dr.')) {
-                                $name = trim(substr($name, strlen('Dr.')));
-                            }
+                                // remove title prefix
+                                if (false !== $pos = strpos($name, 'Dr.')) {
+                                    $name = trim(substr($name, strlen('Dr.')));
+                                }
 
-                            // prepare API call
-                            $apiUrl = 'https://api.twitter.com/1.1/users/search.json';
-                            $constraints = [
-                                'q=' . $name,
-                                'include_entities=false',
-                                'count=20', // maximum value
-                                'page=1',
-                            ];
+                                // prepare API call
+                                $apiUrl = 'https://api.twitter.com/1.1/users/search.json';
+                                $constraints = [
+                                    'q=' . $name,
+                                    'include_entities=false',
+                                    'count=20', // maximum value
+                                    'page=1',
+                                ];
 
-                            try {
 
                                 $foundAccounts = json_decode(
                                     $this->twitter->setGetfield('?' . implode('&', $constraints))
@@ -264,11 +264,11 @@ class TwitterAccountFinder
                                 } else {
                                     $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('No possible accounts for name "%s" found.', $name));
                                 }
-
-                            } catch (\Exception $e) {
-                                $this->logUtility->log($this->logUtility::LOG_ERROR, $e->getMessage());
                             }
                         }
+
+                    } catch (\Throwable $e) {
+                        $this->logUtility->log($this->logUtility::LOG_ERROR, $e->getMessage());
                     }
 
                     $url->setProcessed(true);

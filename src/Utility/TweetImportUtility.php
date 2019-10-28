@@ -175,9 +175,14 @@ class TweetImportUtility
             && ($tweet->getCreatedAt())
             && ($tweet->getFullText())
         ){
-            $this->tweetRepository->insert($tweet);
-            $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Imported tweet with id = %s for user %s into database.', $tweet->getTweetId(), $account->getUserName()));
-            return true;
+            if (! $this->tweetRepository->findOneByTweetId($tweet->getTweetId(), false)) {
+                $this->tweetRepository->insert($tweet);
+                $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Imported tweet with id = %s for user %s into database.', $tweet->getTweetId(), $account->getUserName()));
+                return true;
+            } else {
+                $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Tweet with id = %s for user %s already exists in database.', $tweet->getTweetId(), $account->getUserName()));
+            }
+
         }
 
         $this->logUtility->log($this->logUtility::LOG_ERROR, sprintf('Could not import given tweet for user %s into database.', $account->getUserName()));
