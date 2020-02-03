@@ -31,6 +31,11 @@ class TwitterAccountFinder
     protected $urlRepository;
 
     /**
+     * @var \Madj2k\TwitterAnalyser\Utility\AccountImportUtility
+     */
+    protected $accountImportUtility;
+
+    /**
      * @var \Madj2k\TwitterAnalyser\Utility\RateLimitUtility
      */
     protected $rateLimitUtility;
@@ -62,6 +67,7 @@ class TwitterAccountFinder
         $this->accountRepository = new \Madj2k\TwitterAnalyser\Repository\AccountRepository();
         $this->urlRepository = new \Madj2k\TwitterAnalyser\Repository\UrlRepository();
 
+        $this->accountImportUtility = new \Madj2k\TwitterAnalyser\Utility\AccountImportUtility();
         $this->rateLimitUtility = new \Madj2k\TwitterAnalyser\Utility\RateLimitUtility();
         $this->logUtility = new  \Madj2k\TwitterAnalyser\Utility\LogUtility();
 
@@ -150,42 +156,19 @@ class TwitterAccountFinder
                     try {
                         if ($detailPage = $this->fetchData($url->getBaseUrl() . $url->getUrl())) {
 
+                            //=================================
                             // 1. Check for Twitter-Links
                             if (
                                 (preg_match($regExpTwitterLinks, $detailPage, $matches))
-                                && ($userName = $matches[1])
+                                && ($userName = str_replace('@', '', $matches[1]))
                             ) {
 
-                                /** @var \Madj2k\TwitterAnalyser\Model\Account $account */
-                                $account = new Account();
-                                $account->setUserName($userName);
-
-                                /** @var \Madj2k\TwitterAnalyser\Model\Account $databaseAccount */
-                                $databaseAccount = $this->accountRepository->findOneByUserName($account->getUserName(), false);
-                                if (! $databaseAccount) {
-                                    $this->accountRepository->insert($account);
-                                    $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Inserted new account %s found in url with id = %s.', $account->getUserName(), $url->getUid()));
+                                if ($this->accountImportUtility->importPrimary($url, $userName)) {
                                     $importCount++;
-
-                                } else {
-
-                                    // if it is a secondary account or a suggestion it now becomes a primary one!
-                                    if (
-                                        ($databaseAccount->getIsSecondary())
-                                        || ($databaseAccount->getIsSuggestion())
-                                    ){
-                                        $databaseAccount->setIsSecondary(false);
-                                        $databaseAccount->setIsSuggestion(false);
-                                        $databaseAccount->setSuggestionForName('');
-
-                                        $this->accountRepository->update($databaseAccount);
-                                        $this->logUtility->log($this->logUtility::LOG_INFO, sprintf('Account %s found in url with id = %s already exists as secondary or suggestion account. Set to primary account now.', $account->getUserName(), $url->getUid()));
-
-                                    } else {
-                                        $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Account %s found in url with id = %s already exists.', $account->getUserName(), $url->getUid()));
-                                    }
                                 }
 
+
+                            //=================================
                             // 2. Search via API by name
                             } else if (
                                 (preg_match($regExpNames, $detailPage, $matches))
@@ -227,35 +210,8 @@ class TwitterAccountFinder
 
                                     foreach ($foundAccounts as $foundAccount) {
 
-                                        /** @var \Madj2k\TwitterAnalyser\Model\Account $account */
-                                        $account = new Account($foundAccount);
-                                        $account->setIsSuggestion(true)
-                                            ->setSuggestionForName($name);
-
-                                        // only take verified accounts as suggestions
-                                        if (! $account->getVerified()) {
-                                            continue;
-                                        }
-
-                                        /** @var \Madj2k\TwitterAnalyser\Model\Account $databaseAccount */
-                                        $databaseAccount = $this->accountRepository->findOneByUserName($account->getUserName(), false);
-                                        if (! $databaseAccount) {
-                                            $this->accountRepository->insert($account);
-                                            $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Inserted new account %s as suggestion found in url with id = %s.', $account->getUserName(), $url->getUid()));
+                                        if ($this->accountImportUtility->importSecondary($url, $foundAccount, $name)) {
                                             $importCount++;
-
-                                        } else {
-
-                                            // if it is a secondary account we mark it as suggestion!
-                                            if ($databaseAccount->getIsSecondary()) {
-                                                $databaseAccount->setIsSuggestion(true)
-                                                    ->setSuggestionForName($name);
-                                                $this->accountRepository->update($databaseAccount);
-                                                $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Account %s found as suggestion in url with id = %s already exists as secondary account. Marked as suggestion.', $account->getUserName(), $url->getUid()));
-
-                                            } else {
-                                                $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Account %s found as suggestion in url with id = %s already exists.', $account->getUserName(), $url->getUid()));
-                                            }
                                         }
                                     }
 

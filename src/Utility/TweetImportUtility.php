@@ -102,8 +102,16 @@ class TweetImportUtility
                 $secondaryAccount = new \Madj2k\TwitterAnalyser\Model\Account($object->user);
                 $secondaryAccount->setIsSecondary(true);
 
+                // check for existing account by userName or userId - userNames may change...
+                $checkMethod = 'findOneByUserName';
+                $checkValue = $secondaryAccount->getUserName();
+                if ($secondaryAccount->getUserId()) {
+                    $checkMethod = 'findOneByUserId';
+                    $checkValue = $secondaryAccount->getUserId();
+                }
+
                 /** @var \Madj2k\TwitterAnalyser\Model\Account $secondaryAccountDatabase */
-                if ($secondaryAccountDatabase = $this->accountRepository->findOneByUserName($secondaryAccount->getUserName(), false)) {
+                if ($secondaryAccountDatabase = $this->accountRepository->$checkMethod($checkValue, false)) {
 
                     // set isSecondary on existing account only if it is a suggestion
                     if ($secondaryAccountDatabase->getIsSuggestion()) {

@@ -114,7 +114,8 @@ class AccountRepository extends RepositoryAbstract
     public function findBySuggestionOrderedBySuggestionForNameAndName (bool $suggestion = true)
     {
 
-        $sql = 'SELECT * FROM ' . $this->table . ' WHERE is_suggestion = ' . intval($suggestion) . ' AND is_secondary = 0 ORDER BY suggestion_for_name, name ASC';
+        // $sql = 'SELECT * FROM ' . $this->table . ' WHERE is_suggestion = ' . intval($suggestion) . ' AND is_secondary = 0 ORDER BY suggestion_for_name, name ASC';
+        $sql = 'SELECT * FROM ' . $this->table . ' WHERE is_suggestion = ' . intval($suggestion) . ' ORDER BY suggestion_for_name, name ASC';
 
         $result = $this->_findAll($sql, []);
         return $result;
