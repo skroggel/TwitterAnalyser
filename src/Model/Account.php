@@ -93,6 +93,16 @@ class Account extends ModelAbstract
     protected $statusesCount = 0;
 
     /**
+     * @var string
+     */
+    protected $party = '';
+
+    /**
+     * @var int
+     */
+    protected $resignedTimestamp = 0;
+
+    /**
      * @var int
      */
     protected $fetchTimelineTimestamp = 0;
@@ -102,6 +112,10 @@ class Account extends ModelAbstract
      */
     protected $fetchAddressedTimestamp = 0;
 
+    /**
+     * @var bool
+     */
+    protected $exported = false;
 
 
     /**
@@ -110,7 +124,17 @@ class Account extends ModelAbstract
     protected $_mapping = [
         'id' => 'userId',
         'screen_name' => 'userName',
-        'favouritesCount' => 'favoritesCount'
+        'name' => 'name',
+        'location' => 'location',
+        'description' => 'description',
+        'url' => 'url',
+        'verified' => 'verified',
+        'created_at' => 'createdAt',
+        'followers_count' => 'followersCount',
+        'friends_count' => 'friendsCount',
+        'listed_count' => 'listedCount',
+        'favourites_count' => 'favoritesCount',
+        'statuses_count' => 'statusesCount'
     ];
 
     
@@ -503,6 +527,55 @@ class Account extends ModelAbstract
 
 
     /**
+     * Gets party
+     *
+     * @return string
+     */
+    public function getParty()
+    {
+        return $this->party;
+    }
+
+
+    /**
+     * Sets party
+     *
+     * @param string $party
+     * @return $this
+     */
+    public function setParty($party)
+    {
+        $this->party = $party;
+        return $this;
+    }
+
+
+
+    /**
+     * Gets resignedTimestamp
+     *
+     * @return int
+     */
+    public function getResignedTimestamp()
+    {
+        return $this->resignedTimestamp;
+    }
+
+
+    /**
+     * Sets ResignedTimestamp
+     *
+     * @param int $timestamp
+     * @return $this
+     */
+    public function setResignedTimestamp(int $timestamp)
+    {
+        $this->resignedTimestamp = intval($timestamp);
+        return $this;
+    }
+
+
+    /**
      * Gets FetchTimelineTimestamp
      *
      * @return int
@@ -538,7 +611,7 @@ class Account extends ModelAbstract
 
 
     /**
-     * Sets FetchAddressedTimestamp
+     * Sets fetchAddressedTimestamp
      *
      * @param int $timestamp
      * @return $this
@@ -548,5 +621,28 @@ class Account extends ModelAbstract
         $this->fetchAddressedTimestamp = intval($timestamp);
         return $this;
     }
+
+    /**
+     * Gets exported
+     *
+     * @return bool
+     */
+    public function getExported()
+    {
+        return $this->exported;
+    }
+
+    /**
+     * Sets exported
+     *
+     * @param bool $exported
+     * @return $this
+     */
+    public function setExported($exported)
+    {
+        $this->exported = boolval($exported);
+        return $this;
+    }
+
 
 }

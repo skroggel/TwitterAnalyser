@@ -113,8 +113,9 @@ class AccountImportUtility
     {
 
         /** @var \Madj2k\TwitterAnalyser\Model\Account $account */
-        $account = new Account($foundAccount);
-        $account->setIsSuggestion(true)
+        $account = new Account();
+        $account->importData($foundAccount)
+            ->setIsSuggestion(true)
             ->setSuggestionForName($name);
 
         // only take verified accounts as suggestions

@@ -60,8 +60,8 @@ try {
             }
 
 
-            /** @var \Madj2k\TwitterAnalyser\TwitterAccountFinder $accountFinder */
-            $accountFinder = new \Madj2k\TwitterAnalyser\TwitterAccountFinder();
+            /** @var \Madj2k\TwitterAnalyser\AccountImporter $accountImporter */
+            $accountImporter = new \Madj2k\TwitterAnalyser\AccountImporter();
 
             if (
                 (! file_exists(__DIR__ . '/../import-details.lock'))
@@ -72,7 +72,7 @@ try {
             ) {
                 touch (__DIR__ . '/../import-details.lock');
                 $logUtility->log($logUtility::LOG_DEBUG, 'Checking for detail links.');
-                if ($importedLinks = $accountFinder->fetchDetailLinksFromWebList($params['url'], $params['baseUrl'], $params['regExpDetailLinks'])) {
+                if ($importedLinks = $accountImporter->fetchDetailLinksFromWebList($params['url'], $params['baseUrl'], $params['regExpDetailLinks'])) {
                     $logUtility->log($logUtility::LOG_INFO, sprintf('Imported %s detail links for further processing on the given url.', $importedLinks));
                 } else {
                     $logUtility->log($logUtility::LOG_INFO, 'No detail links found on the given url or all detail links found have already been imported for further processing.');
@@ -83,7 +83,7 @@ try {
             
 
             $logUtility->log($logUtility::LOG_DEBUG, sprintf('Checking for account names on imported detail pages, using maxLinksLimit=%s', $params['maxLinksLimit']));
-            if ($importedAccounts = $accountFinder->fetchAccountNamesFromDetailLinks($params['regExpTwitterLinks'], $params['regExpNames'], $params['maxLinksLimit'])) {
+            if ($importedAccounts = $accountImporter->fetchAccountNamesFromDetailLinks($params['regExpTwitterLinks'], $params['regExpNames'], $params['maxLinksLimit'])) {
                 $logUtility->log($logUtility::LOG_INFO, sprintf('Imported %s Twitter accounts based on details links on the given url.', $importedAccounts));
             } else {
                 $logUtility->log($logUtility::LOG_INFO, 'No Twitter accounts imported based on the given url.');

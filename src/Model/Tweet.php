@@ -55,6 +55,11 @@ class Tweet extends ModelAbstract
     /**
      * @var string
      */
+    protected $hashtagsWordsOnly = '';
+
+    /**
+     * @var string
+     */
     protected $mentions = '';
 
     /**
@@ -102,15 +107,41 @@ class Tweet extends ModelAbstract
      */
     protected $favoriteCount = 0;
 
+    /**
+     * @var bool
+     */
+    protected $exported = false;
+
+    /**
+     * @var int
+     */
+    protected $interactionTime = 0;
+
+
+    /**
+     * @var int
+     */
+    protected $replyCount = 0;
+
+
+    /**
+     * @var int
+     */
+    protected $calculationTimestamp = 0;
+
 
     /**
      * @var array
      */
     protected $_mapping = [
         'id' => 'tweetId',
+        'created_at' => 'createdAt',
+        'text' => 'fullText',
+        'full_text' => 'fullText',
         'in_reply_to_status_id' => 'inReplyToTweetId',
         'in_reply_to_user_id' => 'inReplyToUserId',
-        'text' => 'fullText'
+        'retweet_count' => 'retweetCount',
+        'favorite_count' => 'favoriteCount'
     ];
 
 
@@ -323,6 +354,46 @@ class Tweet extends ModelAbstract
         $this->hashtags = implode('|', $exploded);
         return $this;
     }
+
+
+
+    /**
+     * Gets hashtagsWordsOnly
+     *
+     * @return string
+     */
+    public function getHashtagsWordsOnly()
+    {
+        return $this->hashtagsWordsOnly;
+    }
+
+
+    /**
+     * Sets hashtagsWordsOnly
+     *
+     * @param string $hashtagsWordsOnly
+     * @return $this
+     */
+    public function setHashtagsWordsOnly($hashtagsWordsOnly)
+    {
+        $this->hashtagsWordsOnly = $hashtagsWordsOnly;
+        return $this;
+    }
+
+    /**
+     * Adds hashtagWordsOnly
+     *
+     * @param string $hashtagWordsOnly
+     * @return $this
+     */
+    public function addHashtagWordsOnly($hashtagWordsOnly)
+    {
+        $exploded = explode(',', $this->hashtagsWordsOnly);
+        $exploded[] = $hashtagWordsOnly;
+        $this->hashtagsWordsOnly = implode(',', $exploded);
+        return $this;
+    }
+
 
     /**
      * Gets mentions
@@ -625,7 +696,95 @@ class Tweet extends ModelAbstract
         return $this;
     }
 
+    /**
+     * Gets exported
+     *
+     * @return bool
+     */
+    public function getExported()
+    {
+        return $this->exported;
+    }
+
+    /**
+     * Sets exported
+     *
+     * @param bool $exported
+     * @return $this
+     */
+    public function setExported($exported)
+    {
+        $this->exported = boolval($exported);
+        return $this;
+    }
+
+    /**
+     * Gets interactionTime
+     *
+     * @return int
+     */
+    public function getInteractionTime()
+    {
+        return $this->interactionTime;
+    }
 
 
+    /**
+     * Sets interactionTIme
+     *
+     * @param int $interactionTime
+     * @return $this
+     */
+    public function setInteractionTime($interactionTime)
+    {
+        $this->interactionTime = intval($interactionTime);
+        return $this;
+    }
 
+    /**
+     * Gets replyCount
+     *
+     * @return int
+     */
+    public function getReplyCount()
+    {
+        return $this->replyCount;
+    }
+
+
+    /**
+     * Sets replyCount
+     *
+     * @param int $replyCount
+     * @return $this
+     */
+    public function setReplyCount($replyCount)
+    {
+        $this->replyCount = intval($replyCount);
+        return $this;
+    }
+
+
+    /**
+     * Gets calculationTimestamp
+     *
+     * @return int
+     */
+    public function getCalculationTimestamp()
+    {
+        return $this->calculationTimestamp;
+    }
+
+
+    /**
+     * Sets calculationTimestamp
+     *
+     * @param int $timestamp
+     * @return $this
+     */
+    public function setCalculationTimestamp(int $timestamp)
+    {
+        $this->calculationTimestamp = intval($timestamp);
+        return $this;
+    }
 }

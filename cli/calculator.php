@@ -1,4 +1,3 @@
-
 <?php
 if (php_sapi_name() != "cli") {
     echo 'This script has to be executed via CLI.';
@@ -16,17 +15,18 @@ try {
 
     try {
 
-        if (!file_exists(__DIR__ . '/../fetch.lock')) {
-            touch(__DIR__ . '/../fetch.lock');
+        if (!file_exists(__DIR__ . '/../calculate.lock')) {
+            touch(__DIR__ . '/../calculate.lock');
 
-            $logUtility->log($logUtility::LOG_INFO, 'Fetching tweets.');
+            $logUtility->log($logUtility::LOG_INFO, 'Calculating interaction-time and counting replies of timeline tweets.');
+            $limit = (isset($argv[1]) ? $argv[1] : 100);
 
-            /** @var \Madj2k\TwitterAnalyser\TweetImporter $twitter */
-            $tweetImporter = new \Madj2k\TwitterAnalyser\TweetImporter();
-            $tweetImporter->fetchTweets();
+            /** @var \Madj2k\TwitterAnalyser\TweetCalculator $tweetCalculator */
+            $tweetCalculator = new \Madj2k\TwitterAnalyser\TweetCalculator();
+            $tweetCalculator->calculateInteractionTimeAndCountReplies($limit);
 
-            unlink(__DIR__ . '/../fetch.lock');
-            $logUtility->log($logUtility::LOG_INFO, 'Finished fetching tweets.');
+            unlink(__DIR__ . '/../calculate.lock');
+            $logUtility->log($logUtility::LOG_INFO, 'Finished calculating.');
 
         } else {
             $logUtility->log($logUtility::LOG_WARNING, 'Script is already running.');

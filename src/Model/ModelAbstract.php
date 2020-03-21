@@ -64,14 +64,13 @@ abstract class ModelAbstract
      * init data
      *
      * @param array|object $data
-     * @param bool $initialValues
      */
-    public function _injectData($data = [], $initialValues = true)
+    protected function _injectData($data = [])
     {
 
         // get properties and their initial values
         $existingProperties = get_object_vars($this);
-        if ($initialValues) {
+        if (! count($this->_initProperties)) {
             foreach ($existingProperties as $existingProperty => $initialValue) {
                 if (strpos($existingProperty, '_') === 0) {
                     continue;
@@ -90,18 +89,43 @@ abstract class ModelAbstract
             (is_array($data))
             && (count($data) > 0)
         ) {
+
+            // set given data to model properties and adjust initial values accordingly
             foreach ($data as $key => $value) {
                 $property = GeneralUtility::underscoreToCamelCase($key);
                 $setter = 'set' . ucfirst($property);
                 if (method_exists($this, $setter)) {
                     $this->$setter($value);
-                    if ($initialValues) {
-                        $this->_initProperties[$property] = $this->{$property};
-                    }
+                    $this->_initProperties[$property] = $this->{$property};
                 }
             }
 
-            // mapping for field to property
+        }
+    }
+
+
+    /**
+     * import data
+     *
+     * @param array|object $data
+     * @return $this
+     */
+    public function importData($data = [])
+    {
+
+        // get data from given objects
+        if (is_object($data)) {
+            $data = get_object_vars($data);
+        }
+
+        // set given data to model properties and adjust initial values accordingly
+        if (
+            (is_array($data))
+            && (count($data) > 0)
+        ) {
+
+            // import data from third party source and do field mapping
+            // do not reset initial values in this case
             if (is_array($this->_mapping)) {
 
                 foreach ($this->_mapping as $source => $target) {
@@ -112,13 +136,12 @@ abstract class ModelAbstract
                         && (method_exists($this, $setter))
                     ){
                         $this->$setter($data[$source]);
-                        if ($initialValues) {
-                            $this->_initProperties[$property] = $this->{$property};
-                        }
                     }
                 }
             }
         }
+
+        return $this;
     }
 
 
@@ -240,7 +263,6 @@ abstract class ModelAbstract
                 || ($property == 'uid')
             ){
                 continue;
-                //===
             }
 
             // if object is loaded from database we only take the changed properties
@@ -257,7 +279,6 @@ abstract class ModelAbstract
         }
 
         return $changedProperties;
-        //===
     }
 
 

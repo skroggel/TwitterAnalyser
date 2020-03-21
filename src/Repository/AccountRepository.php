@@ -73,7 +73,7 @@ class AccountRepository extends RepositoryAbstract
 
 
     /**
-     * Find all sorted by last fetch timestamp
+     * Find all sorted by last fetchTimelineTimestamp
      *
      * @param int $limit
      * @return array|null
@@ -88,8 +88,9 @@ class AccountRepository extends RepositoryAbstract
         return $result;
     }
 
+
     /**
-     * Find all sorted by last fetch timestamp
+     * Find all sorted by last fetchAddressedTimestamp
      *
      * @param int $limit
      * @return array|null

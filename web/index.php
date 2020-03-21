@@ -1,23 +1,16 @@
+<!doctype html>
 <?php
-// <!doctype html>
     // error_reporting(E_ALL);
     require_once(__DIR__ . '/../config/settings.php');
     require_once(__DIR__ . '/../vendor/autoload.php');
 
     $accountRepository = new \Madj2k\TwitterAnalyser\Repository\AccountRepository();
-    $tweetListView = new \Madj2k\TwitterAnalyser\View\TweetListView();
-
+    $tweetWebView = new \Madj2k\TwitterAnalyser\View\TweetWebView();
 ?>
 <html>
     <head>
-        <title>TwitterAnalyser</title>
-
-        <style type="text/css">
-            .tweet { padding-top:1em;}
-            .tweet__header { font-weight:bold; display:block;}
-            .tweet__body,
-            .tweet__media { display:block;}
-        </style>
+        <title>TwitterAnalyser - Tweets</title>
+        <link rel="stylesheet" type="text/css" href="css/main.css" />
     </head>
     <body>
         <form method="post" name="filter">
@@ -56,7 +49,7 @@
                 $toTime = (isset($_POST['toTime']) ? strtotime($_POST['toTime']) : 0);
 
                 if ($account = $accountRepository->findOneByUid(intval($_POST['account']))) {
-                    echo $tweetListView->render($account, $fromTime, $toTime);
+                    echo $tweetWebView->render($account, $fromTime, $toTime);
                 }
             }
         ?>

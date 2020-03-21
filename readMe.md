@@ -11,6 +11,9 @@ The tool has the following functions:
 * Reading and saving the tweets of the timelines of the Twitter accounts to be captured
 * Reading and saving the current conversations on the Twitter accounts to be captured
 * Evaluation function based on Twitter account and time period
+* Calculation of interaction duration and number of replies
+* Export function
+* Automatic anonymization during export
 * Includes emojis and related media
 
 # Special features
@@ -34,7 +37,8 @@ The tool has the following functions:
 The tool has been developed object-based and has corresponding models and repositories through which data access is handled.
 It consists of the following core elements:
 
-## Importer (importer.php)
+# CLI-Tools
+## Importer (cli/importer.php)
 The Importer is executed via the CLI and is used to search a given contact list in the form of a website for links to Twitter accounts.
 The URL to a contact list in HTML format, which in turn contains links to the detail pages, is therefore passed here. 
 In the concrete case of application, the list of members of the German Bundestag was used as available on www.bundestag.de.
@@ -65,7 +69,7 @@ Example for the setup of a cronjob:
 */5 * * * * /usr/bin/php7.2 /var/www/diss/cli/importer.php 'https://www.bundestag.de/ajax/filterlist/de/abgeordnete/525246-525246/h_e3c112579919ef960d06dbb9d0d44b67?limit=9999&view=BTBiographyList' 'https://www.bundestag.de' '#<a[^>]+href="(/abgeordnete/biografien/[^"]+)"[^>]+>#' '#<a[^>]+href="http[s]?://[^\.]*\.?twitter\.com/(@?(\w){1,15})[^"]*"[^>]+>#' '#<div class="[^"]+ bt-biografie-name">[^<]*<h3>([^<]+)</h3>#' > /dev/null
 ```
 
-## Fetcher (fetcher.php)
+## Fetcher (cli/fetcher.php)
 The fetcher is executed via the CLI and performs three core tasks:
 * Reading and saving of the tweets from the timelines of the Twitter accounts into the database
 * Updating the information on the Twitter accounts  (e.g. description, number of followers and favorites)
@@ -86,10 +90,7 @@ Example for the setup of a cronjob:
 */5 * * * * * /usr/bin/php7.2 /var/www/diss/cli/fetcher.php > /dev/null
 ```
 
-# Evaluation (index.php)
-The evaluation can be done by Twitter account and period.
-
-# Reporter (reporter.php)
+## Reporter (cli/reporter.php)
 The reporter is executed via the CLI and sends a regular report on the status of the tool.
 You can configure the log level, the frequency of the reports, and the recipient e-mail.
 
@@ -105,6 +106,42 @@ Example for the setup of a cronjob:
 0 0 * * * * /usr/bin/php7.2 /var/www/diss/cli/reporter.php > /dev/null
 ```
 
+## Calculator (cli/calculator.php)
+The calculator calculates the time between two tweets of a conversation and the number of replies per conversation.
+This script may only be executed after the capture has been completed.
+
+The script accepts the following parameters:
+* **limit**: Number of tweets to be processed per call (default: 100)
+
+Example call via the CLI:
+```
+php7.2 /var/www/diss/cli/calculator.php 100
+```
+
+Example for the setup of a cron job: 
+```
+# m h dom mon dow command
+/2 * * * * /usr/bin/php7.2 /var/www/diss/cli/calculator.php 100 > /dev/null
+```
+
+
+# Web-Tools
+
+## Export (web/export.php)
+The export can be filtered by party and hashtags. An automatic anonymization is performed during the export.
+
+## View (web/index.php)
+View conversations by account and period.
+
+## Statistics (web/statistics.php)
+Brief overview of the number of tweets and accounts recorded.
+
+## Assignment of accounts to parties (web/party.php)
+In order to be able to assign party membership quickly and easily.
+
+## Account suggestions (web/suggestions.php)
+In order to be able to check accounts found via the search-API and activate them for further processing.
+
 ---
 
 # Einleitung
@@ -117,6 +154,9 @@ Das Tool hat die folgenden Funktionen:
 * Auslesen und Speichern der Tweets der Timelines der zu erfassenden Twitter-Accounts
 * Auslesen und Speichern der laufenden Konversationen auf den zu erfassenden Twitter-Accounts
 * Auswertungsfunktion basierend auf Twitter-Account und Zeitraum
+* Berechnung von Interaktionsdauer und Anzahl der Replies
+* Exportfunktion
+* Automatische Anonymisierung beim Export
 * Berücksichtigt Emojis und verknüpfte Medien
 
 # Besonderheiten
@@ -140,7 +180,8 @@ Das Tool hat die folgenden Funktionen:
 Das Tool ist objektbasiert entwickelt worden und verfügt über entsprechende Models und Repositories über die die Datenzugriffe abgewickelt werden.
 Es besteht aus den folgenden Kern-Elementen:
 
-## Importer (importer.php)
+# CLI-Tools
+## Importer (cli/importer.php)
 Der Importer wird über das CLI ausgeführt und dient dazu, eine gegebenene Kontaktliste in Form einer Website nach Links zu Twitter-Accounts zu durchsuchen.
 Übergeben wird hier daher die URL zu einer Kontaktliste im HTML-Format, die ihrerseits Links zu den Detailseiten enthält. 
 Im konkreten Anwendungsfall wurde hier die Liste der Abgeordneten des Deutschen Bundestages auf www.bundestag.de übergeben.
@@ -192,10 +233,7 @@ Beispiel für die Einrichtung eines Cronjobs:
 */5 * * * * /usr/bin/php7.2 /var/www/diss/cli/fetcher.php > /dev/null
 ```
 
-# Auswertung (index.php)
-Die Auswertung kann nach Twitter-Account und Zeitraum erfolgen.
-
-# Reporter (reporter.php)
+## Reporter (cli/reporter.php)
 Der Reporter wird über das CLI ausgeführt und sendet einen regelmäßigen Report über den Status des Tools.
 Dabei kann das Log-Level, die Häufigkeit der Reports und die Empfänger- E-Mail konfiguriert werden.
 
@@ -210,3 +248,37 @@ Beispiel für die Einrichtung eines Cronjobs:
 # m h  dom mon dow   command
 0 0 * * * /usr/bin/php7.2 /var/www/diss/cli/reporter.php > /dev/null
 ```
+
+## Calculator (cli/calculator.php)
+Der Calculator berechnet die Zeit zwischen zwei Tweets einer Konversation und die Anzahl der Replies pro Konversation.
+Dieses Script darf erst ausgeführt werden, wenn die Erfassung beendet wurde.
+
+Das Script nimmt folgende Paramater entgegen:
+* **limit**: Menge der pro Aufruf abzuarbeitenden Tweets (default: 100)
+
+Beispiel-Aufruf über das CLI:
+```
+php7.2 /var/www/diss/cli/calculator.php 100
+```
+
+Beispiel für die Einrichtung eines Cronjobs: 
+```
+# m h  dom mon dow   command
+/2 * * * * /usr/bin/php7.2 /var/www/diss/cli/calculator.php 100 > /dev/null
+```
+
+# Web-Tools
+## Export (web/export.php)
+Der Export kann nach Partei und Hashtags gefiltern vorgenommen werden. Beim Export erfolgt eine automatische Anonymisierung.
+
+## Ansicht (web/index.php)
+Die Ansicht kann nach Twitter-Account und Zeitraum erfolgen.
+
+## Statistik (web/statistics.php)
+Kurzübersicht über die Anzahl der erfassten Tweets und Accounts
+
+## Zuordnung von Accounts zu Parteien (web/party.php)
+Um die Parteizugehörigkeit schnell und einfach zuordnen zu können.
+
+## Account-Vorschläge (web/suggestions.php)
+Um über die Suche gefundene Accounts prüfen und entsprechend für die Erfassung freigeben zu können.

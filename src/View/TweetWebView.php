@@ -2,14 +2,14 @@
 namespace Madj2k\TwitterAnalyser\View;
 
 /**
- * TweetListView
+ * TweetWebView
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright Steffen Kroggel 2019
  * @package Madj2k_TwitterAnalyser
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class TweetListView
+class TweetWebView
 {
 
 
@@ -55,7 +55,7 @@ class TweetListView
     public function render (\Madj2k\TwitterAnalyser\Model\Account $account, int $fromTime = 0, int $toTime = 0)
     {
         $html = '';
-        if ($tweets = $this->tweetRepository->findByAccountAndTypeAndTimeOrderedByCreateAt($account, 'timeline', $fromTime, $toTime)) {
+        if ($tweets = $this->tweetRepository->findTimelineTweetsByAccountAndTimeOrderedByCreateAt($account, $fromTime, $toTime)) {
 
             $html = '<ol class="tweet-list" >';
 

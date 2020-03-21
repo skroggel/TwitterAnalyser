@@ -18,6 +18,8 @@ bower_components
 /.php-version
 /vendor
 
+/web/export/*
+!/web/export/.gitkeep
 /web/.htaccess
 /web/.htpasswd
 /web/gitpull.php

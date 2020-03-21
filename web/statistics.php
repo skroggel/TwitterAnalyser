@@ -1,5 +1,5 @@
+<!doctype html>
 <?php
-// <!doctype html>
     // error_reporting(E_ALL);
     require_once(__DIR__ . '/../config/settings.php');
     require_once(__DIR__ . '/../vendor/autoload.php');

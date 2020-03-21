@@ -1,6 +1,6 @@
 - Add unique key for account_id to account-table (problem with @lisapaus). Check:
 ```
-SELECT uid, user_id, create_timestamp, user_name, is_secondary, is_suggestion FROM account WHERE 
+SELECT uid, user_id, create_timestamp, change_timestamp, user_name, is_secondary, is_suggestion FROM account WHERE 
 user_id IN (
     SELECT account_sub1.user_id FROM account AS account_sub1 WHERE account_sub1.user_id > 0 GROUP BY account_sub1.user_id HAVING COUNT(account_sub1.user_id) > 1
 ) 

@@ -70,8 +70,9 @@ class TweetImportUtility
     public function import (\Madj2k\TwitterAnalyser\Model\Account $account, string $type, \stdClass $object)
     {
 
-        $tweet = new Tweet($object);
-        $tweet->setAccount($account->getUid())
+        $tweet = new Tweet();
+        $tweet->importData($object)
+            ->setAccount($account->getUid())
             ->setType($type);
 
         // check if tweet is a reply
@@ -91,7 +92,7 @@ class TweetImportUtility
             // if $type is 'timeline' we also update the given account
             if ($type == 'timeline') {
 
-                $account->_injectData($object->user, false);
+                $account->importData($object->user);
                 $this->accountRepository->update($account);
                 $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Updated account info for user %s in database.', $account->getUserName()));
 
@@ -115,7 +116,7 @@ class TweetImportUtility
 
                     // set isSecondary on existing account only if it is a suggestion
                     if ($secondaryAccountDatabase->getIsSuggestion()) {
-                       $secondaryAccountDatabase->_injectData($object->user, false);
+                       $secondaryAccountDatabase->importData($object->user);
                        $secondaryAccountDatabase->setIsSecondary(true);
 
                        $this->accountRepository->update($secondaryAccountDatabase);
@@ -137,6 +138,7 @@ class TweetImportUtility
             ){
                 foreach ($hastags as $hashtag) {
                     $tweet->addHashtag($hashtag->text . ' [' . $hashtag->indices[0] . ',' . $hashtag->indices[1] . ']');
+                    $tweet->addHashtagWordsOnly(strtolower($hashtag->text));
                 }
             }
 

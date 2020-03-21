@@ -181,7 +181,6 @@ abstract class RepositoryAbstract
 
         $sql = 'SELECT ' . $select . ' FROM ' . $this->table . ' WHERE ' . $whereClause;
         return $this->$fetchMethod($sql, $whereArguments, $checkDeleted);
-        //===
     }
 
 
@@ -198,7 +197,7 @@ abstract class RepositoryAbstract
     {
 
         if ($checkDeleted) {
-            $sql = str_replace('where', 'where deleted = ? and', strtolower($sql));
+            $sql = str_replace('where', 'where ' . $this->table . '.deleted = ? and', strtolower($sql));
             array_unshift($arguments, 0);
         }
 
@@ -229,7 +228,7 @@ abstract class RepositoryAbstract
     public function _findAll (string $sql, array $arguments = [], $checkDeleted = true)
     {
         if ($checkDeleted) {
-            $sql = str_replace('where', 'where deleted = ? and', strtolower($sql));
+            $sql = str_replace('where', 'where ' . $this->table . '.deleted = ? and', strtolower($sql));
             array_unshift($arguments, 0);
         }
 
@@ -265,7 +264,7 @@ abstract class RepositoryAbstract
         $sql .= ' LIMIT 1';
 
         if ($checkDeleted) {
-            $sql = str_replace('where', 'where deleted = ? and', strtolower($sql));
+            $sql = str_replace('where', 'where ' . $this->table . '.deleted = ? and', strtolower($sql));
             array_unshift($arguments, 0);
         }
 
@@ -374,7 +373,6 @@ abstract class RepositoryAbstract
 
             if ($result = $sth->execute($values)) {
                 return $result;
-                //===
             } else {
                 $error = $sth->errorInfo();
                 throw new RepositoryException($error[2] . ' on execution of "' . $sth->queryString . '" with params ' .  print_r($updateProperties, true));

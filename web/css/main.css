@@ -1,0 +1,22 @@
+.list { border:1px solid darkgrey}
+.list td,
+.list tr { border:1px solid darkgrey; padding:5px;}
+.list td.party-cdu { background-color:grey; }
+.list td.party-spd { background-color:red;  }
+.list td.party-linke { background-color:purple; }
+.list td.party-gruene { background-color:green; }
+.list td.party-fdp { background-color:yellow; }
+.list td.party-afd{ background-color:lightskyblue; }
+.list td.party-fraktionslos { background-color: saddlebrown; }
+
+label { display:block; }
+.tweet { padding-top:1em;}
+.tweet__header { font-weight:bold; display:block;}
+.tweet__body,
+.tweet__media { display:block;}
+
+.verify,
+.save { background-color: darkgreen; color:#fff;}
+.delete { background-color: darkred; color:#fff;}
+.message { font-weight:bold; color:darkorange }
+.message--error { color:red }

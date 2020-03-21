@@ -1,5 +1,5 @@
+<!doctype html>
 <?php
-// <!doctype html>
     // error_reporting(E_ALL);
     require_once(__DIR__ . '/../config/settings.php');
     require_once(__DIR__ . '/../vendor/autoload.php');
@@ -8,16 +8,8 @@
 ?>
 <html>
     <head>
-        <title>TwitterAnalyser</title>
-
-        <style type="text/css">
-            .account-list { border:1px solid darkgrey}
-            .account-list td,
-            .account-list tr { border:1px solid darkgrey; padding:5px;}
-            .verify { background-color: darkgreen; color:#fff;}
-            .delete { background-color: darkred; color:#fff;}
-            .message { font-weight:bold; color:darkorange }
-        </style>
+        <title>TwitterAnalyser - Suggestions</title>
+        <link rel="stylesheet" type="text/css" href="css/main.css" />
     </head>
     <body>
 
@@ -61,7 +53,7 @@
         ?>
         <p>Sum: <?php echo count($accountSuggestions) ?></p>
         <hr />
-        <table class="account-list">
+        <table class="list">
             <tr>
                 <th>Uid</th>
                 <th>SuggestionForName</th>
