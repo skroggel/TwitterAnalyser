@@ -22,10 +22,20 @@ class TweetExportView
      */
     protected $tweetRepository;
 
-       /**
+    /**
+     * @var \Madj2k\TwitterAnalyser\Repository\AccountRepository
+     */
+    protected $accountRepository;
+
+     /**
      * @var \Madj2k\TwitterAnalyser\Repository\ExportRepository
      */
     protected $exportRepository;
+
+    /**
+     * @var array
+     */
+    protected $_cacheUsernames = [];
 
 
     /**
@@ -41,6 +51,7 @@ class TweetExportView
 
         // set defaults
         $this->tweetRepository = new \Madj2k\TwitterAnalyser\Repository\TweetRepository();
+        $this->accountRepository = new \Madj2k\TwitterAnalyser\Repository\AccountRepository();
         $this->exportRepository = new \Madj2k\TwitterAnalyser\Repository\ExportRepository();
 
     }
@@ -69,6 +80,7 @@ class TweetExportView
      */
     protected function renderSub (\Madj2k\TwitterAnalyser\Model\Tweet $tweet, string $tab = '', int $maxWidth = 80)
     {
+
         $file = $tab . '====================================' . "\n";
         $file .= $tab . $this->anonymizeUsername($tweet->getUserName()). ' (' . date('d.m.y H:i', $tweet->getCreatedAt()) . ') RTs: ' . $tweet->getRetweetCount() . ', FAVs: ' . $tweet->getFavoriteCount() . "\n";
         $file .= $tab . '====================================' . "\n";
@@ -112,21 +124,42 @@ class TweetExportView
     protected function anonymizeUsername ($username)
     {
 
+        if (isset($this->_cacheUsernames[$username])) {
+           return $this->_cacheUsernames[$username];
+        }
+
+        // do not anonymize verified accounts
+        /** @var \Madj2k\TwitterAnalyser\Model\Account $account */
+        if ($account = $this->accountRepository->findOneByUserName($username)) {
+            if ($account->getVerified()) {
+                $this->_cacheUsernames[$username] = $username . ($account->getParty() ? '/' . $account->getParty() : '');
+                return $this->_cacheUsernames[$username];
+            }
+        }
+
         $checkSum = md5(strtolower($username));
 
         // check for existing value in database
         /** @var \Madj2k\TwitterAnalyser\Model\Export $exportData */
         if ($exportData = $this->exportRepository->findOneByMd5UserName($checkSum)) {
-            return 'user-' . $exportData->getUid();
+            $this->_cacheUsernames[$username] =  'user-' . $exportData->getUid() . ($exportData->getParty() ? '/' . $exportData->getParty() : '');
+            return $this->_cacheUsernames[$username];
         }
 
         // else create a new one!
         /** @var \Madj2k\TwitterAnalyser\Model\Export $exportData */
         $exportData = new \Madj2k\TwitterAnalyser\Model\Export();
         $exportData->setMd5UserName($checkSum);
+        if (
+            ($account)
+            && ($party = $account->getParty())
+        ){
+            $exportData->setParty($party);
+        }
 
         $this->exportRepository->insert($exportData);
-        return 'user-' . $exportData->getUid();
+        $this->_cacheUsernames[$username] =  'user-' . $exportData->getUid() . ($exportData->getParty() ? '/' . $exportData->getParty() : '');
+        return $this->_cacheUsernames[$username];
     }
 
     /**

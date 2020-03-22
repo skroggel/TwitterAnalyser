@@ -31,11 +31,15 @@ CREATE TABLE IF NOT EXISTS `tweet` (
   PRIMARY KEY (uid),
   KEY `account_type` (`account`,`type`),
   KEY `tweet_id_type` (`tweet_id`,`type`),
+  KEY `type` (`type`),
+  KEY `is_reply` (`is_reply`),
   KEY `created_at` (`created_at`),
   KEY `in_reply_type` (`in_reply_to_tweet_id`, `type`),
   KEY `user_id` (`user_id`),
   KEY `user_name` (`user_name`),
+  KEY `exported` (`exported`),
   KEY `interaction_time` (`interaction_time`),
+  KEY `calculation_timestamp` (`calculation_timestamp`),
   KEY `reply_count` (`reply_count`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

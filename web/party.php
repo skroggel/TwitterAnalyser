@@ -30,6 +30,7 @@
             // get all relevant accounts
             $accountList = $accountRepository->findAll();
         ?>
+        <h1>Set party affiliations and resign-dates</h1>
         <p>Sum: <?php echo count($accountList) ?></p>
         <hr />
         <table class="list">
@@ -39,7 +40,7 @@
                 <th>Name</th>
                 <th>Description</th>
                 <th>Verified</th>
-                <th>Party & Resigned Date (Format: Y-m-d)</th>
+                <th>Party & Resigned Date (Format: YYYY-mm-dd)</th>
             </tr>
             <?php
 
@@ -77,7 +78,7 @@
                             <option value="fraktionslos" <?php if ($account->getParty() == 'fraktionslos') { echo 'selected="selected"'; }?>>fraktionslos</option>
                         </select>
                         <br />
-                        <label for="resigned-date-<?php echo $account->getUid()?>">Resigned Date (Format: Y-m-d):</label>
+                        <label for="resigned-date-<?php echo $account->getUid()?>">Resigned Date (Format: YYYY-mm-dd):</label>
                         <input id="resigned-date-<?php echo $account->getUid()?>" type="text" name="resignedDate" value="<?php echo date('Y-m-d', $account->getResignedTimestamp()) ?>"/>
                         <button class="save" type="submit">Save</button>
                     </form>

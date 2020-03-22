@@ -65,44 +65,70 @@ class TweetExportUtility
      *
      * @param string $hashtags
      * @param string $party
+     * @param string $fromDate
+     * @param string $toDate
      * @param int $averageInteractionTime
      * @param int $limit
-     * @return int
+     * @param bool $dryRun
+     * @return array
      * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
      */
-    public function export (string $hashtags, string $party, int $averageInteractionTime = 14400, int $limit = 100)
+    public function export (string $hashtags = '', string $party = '', string $fromDate = '', string $toDate = '', int $averageInteractionTime = 14400, int $limit = 0, bool $dryRun = false)
     {
 
         // get all tweets that match the given criteria
-        $tweetList = $this->tweetRepository->findByHashtagsAndPartyAndAverageInteractionTime(
-            explode(',', trim($hashtags)),
+        $tweetList = $this->tweetRepository->findTimelineTweetsByHashtagsAndPartyAndTimeIntervalAndAverageInteractionTime(
+            explode("\n", trim($hashtags)),
             $party,
+            strtotime($fromDate),
+            strtotime($toDate),
             $averageInteractionTime,
-            $limit
+            ($dryRun ? 0 : $limit)
         );
 
-        $timestamp = time();
-        $hashTagList = trim(str_replace(',', '-', preg_replace('#[^a-z0-9,]+#', '', strtolower($hashtags))));
-        $folderName = $timestamp . $party . '_'  . $hashTagList;
-        $filePath = $this->settings['exportPath'] . '/' . $folderName;
+        if (! $dryRun) {
 
-        if (! file_exists($filePath)) {
-            mkdir ($filePath);
-        }
+            $timestamp = time();
+            $hashTagList = trim(strtolower($hashtags));
+            $folderName = $timestamp . '-' . $party;
+            $filePath = $this->settings['exportPath'] . '/' . $folderName;
+            $zipFile = $this->settings['exportPath'] . '/' . $folderName . '.zip';
+            $zipCommand = 'zip -j ' . $zipFile . ' ' . $filePath . '/*';
 
-        if ($tweetList) {
-            foreach ($tweetList as $key => $tweet) {
-
-                file_put_contents(
-                    $filePath . '/' . ($key + 1) . '.txt',
-                    $this->tweetExportView->render($tweet)
-                );
+            if (!file_exists($filePath)) {
+                mkdir($filePath);
             }
 
-            return count($tweetList);
+            if ($tweetList) {
+
+                // hashtag list
+                file_put_contents(
+                    $filePath . '/hashtags.txt',
+                    $hashTagList
+                );
+
+                foreach ($tweetList as $key => $tweet) {
+
+                    file_put_contents(
+                        $filePath . '/' . ($key + 1) . '.txt',
+                        $this->tweetExportView->render($tweet)
+                    );
+                }
+                exec($zipCommand);
+
+                return [
+                    'count' => count($tweetList),
+                    'zip'   => 'export/' . $folderName . '.zip'
+                ];
+
+            }
+        } else {
+            return [
+                'count' => count($tweetList)
+            ];
         }
 
-        return 0;
+        return [];
     }
 
 
