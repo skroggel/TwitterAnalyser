@@ -10,16 +10,72 @@
 ?>
 <html>
     <head>
-        <title>TwitterAnalyser</title>
-
-        <style type="text/css">
-            .tweet__header { font-weight:bold; }
-        </style>
+        <title>TwitterAnalyser – Statistics</title>
+        <link rel="stylesheet" type="text/css" href="css/main.css" />
     </head>
     <body>
-        <h1>Some statistics</h1>
-        <p>Accounts: <?php echo number_format($accountRepository->countAll(), 0, ',', '.'); ?></p>
-        <p>Tweets: <?php echo number_format($tweetRepository->countAll(), 0, ',', '.'); ?></p>
+        <?php
+            $result = [];
+            if (isset($_POST['search'])) {
+
+                $processStart = microtime(true);
+
+                // count accounts
+                $result['accounts'] = $accountRepository->countAllByTimeInterval(
+                    strtotime($_POST['dateFrom']),
+                    strtotime($_POST['dateTo'])
+                );
+
+                // count primary accounts
+
+                $result['accountsPrimary'] = $accountRepository->countAllByTimeInterval(
+                    strtotime($_POST['dateFrom']),
+                    strtotime($_POST['dateTo']),
+                    true
+                );
+
+                // count tweets
+                $result['tweets'] = $tweetRepository->countAllByTimeInterval(
+                    strtotime($_POST['dateFrom']),
+                    strtotime($_POST['dateTo'])
+                );
+
+                $processTime = microtime(true) - $processStart;
+                echo sprintf('<p class="message">Processed in %s seconds.</p>', $processTime);
+            }
+        ?>
+
+        <h1>Statistics</h1>
+        <form method="post" >
+            <fieldset>
+                <legend>Filter</legend>
+                <label for="date-from">From date (format: YYYY-mm-dd):</label>
+                <input id="date-from" type="text" name="dateFrom" value="<?php echo (isset($_POST['dateFrom']) ? $_POST['dateFrom'] : '2019-07-01'); ?>"/>
+
+                <label for="date-to">To date (format: YYYY-mm-dd):</label>
+                <input id="date-to" type="text" name="dateTo" value="<?php echo (isset($_POST['dateTo']) ? $_POST['dateTo'] : '2020-02-29'); ?>"/>
+
+                <button class="save" type="submit" name="search">Search</button>
+            </fieldset>
+        </form>
+
+        <?php if ($result) { ?>
+            <h2>Result</h2>
+            <table class="list">
+                <tr>
+                    <th>Accounts (total):</th>
+                    <td><?php echo number_format($result['accounts'], 0, ',', '.'); ?></td>
+                </tr>
+                <tr>
+                    <th>Accounts (primary):</th>
+                    <td><?php echo number_format($result['accountsPrimary'], 0, ',', '.'); ?></td>
+                </tr>
+                <tr>
+                    <th>Tweets:</th>
+                    <td><?php echo number_format($result['tweets'], 0, ',', '.'); ?></td>
+                </tr>
+            </table>
+        <?php } ?>
     </body>
 
 </html>

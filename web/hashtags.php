@@ -27,7 +27,7 @@
                 );
 
                 $processTime = microtime(true) - $processStart;
-                echo sprintf('<p class="message message--error">Processed in %s seconds.</p>', $processTime);
+                echo sprintf('<p class="message">Processed in %s seconds.</p>', $processTime);
             }
         ?>
 
@@ -42,7 +42,7 @@
                 <input id="date-from" type="text" name="dateFrom" value="<?php echo (isset($_POST['dateFrom']) ? $_POST['dateFrom'] : '2019-07-01'); ?>"/>
 
                 <label for="date-to">To date (format: YYYY-mm-dd):</label>
-                <input id="date-to" type="text" name="dateTo" value="<?php echo (isset($_POST['dateTo']) ? $_POST['dateTo'] : '2020-02-28'); ?>"/>
+                <input id="date-to" type="text" name="dateTo" value="<?php echo (isset($_POST['dateTo']) ? $_POST['dateTo'] : '2020-02-29'); ?>"/>
 
                 <button class="save" type="submit" name="search">Search</button>
             </fieldset>
@@ -64,7 +64,7 @@
                         <tr>
                             <td><?php echo $hashtag ?></td>
                             <td><?php echo $counter ?></td>
-                            <td><?php echo round((100 / $result[$_POST['hashtag']] * $counter), 2) ?>%</td>
+                            <td><?php echo number_format((100 / $result[$_POST['hashtag']] * $counter),2, ',', '.') ?>%</td>
                         </tr>
                         <?php
                     }

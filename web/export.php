@@ -25,6 +25,7 @@
                     $_POST['dateFrom'],
                     $_POST['dateTo'],
                     intval($_POST['averageInteractionTime']),
+                    intval($_POST['minReplyCount']),
                     intval($_POST['limit']),
                     (isset($_POST['dryRun']) ? 1 : 0)
                 );
@@ -65,6 +66,9 @@
                 <label for="avg-interaction-time">Average Interaction Time (in Sec):</label>
                 <input id="avg-interaction-time" type="text" name="averageInteractionTime" value="<?php echo (isset($_POST['averageInteractionTime']) ? intval($_POST['averageInteractionTime']) : '14400'); ?>"/>
 
+                <label for="min-reply-count">Min-Reply-Count :</label>
+                <input id="min-reply-count" type="text" name="minReplyCount" value="<?php echo (isset($_POST['minReplyCount']) ? intval($_POST['minReplyCount']) : '1'); ?>"/>
+
                 <label for="limit">Limit:</label>
                 <input id="limit" type="text" name="limit" value="<?php echo (isset($_POST['limit']) ? intval($_POST['limit']) : '10'); ?>"/>
 
@@ -72,7 +76,7 @@
                 <input id="date-from" type="text" name="dateFrom" value="<?php echo (isset($_POST['dateFrom']) ? $_POST['dateFrom'] : '2019-07-01'); ?>"/>
 
                 <label for="date-to">To date (format: YYYY-mm-dd):</label>
-                <input id="date-to" type="text" name="dateTo" value="<?php echo (isset($_POST['dateTo']) ? $_POST['dateTo'] : '2020-02-28'); ?>"/>
+                <input id="date-to" type="text" name="dateTo" value="<?php echo (isset($_POST['dateTo']) ? $_POST['dateTo'] : '2020-02-29'); ?>"/>
 
                 <label>
                     <input type="checkbox" name="dryRun" value="1" checked="checked"/>Dry Run
