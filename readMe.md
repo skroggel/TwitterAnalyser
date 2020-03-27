@@ -130,6 +130,10 @@ Example for the setup of a cron job:
 ## Export (web/export.php)
 The export can be filtered by party and hashtags. An automatic anonymization is performed during the export.
 
+**IMPORTANT**: The package "zip" must be installed on the executing system.
+```
+apt-get install zip
+```
 ## View (web/index.php)
 View conversations by account and period.
 
@@ -271,6 +275,10 @@ Beispiel für die Einrichtung eines Cronjobs:
 ## Export (web/export.php)
 Der Export kann nach Partei und Hashtags gefiltern vorgenommen werden. Beim Export erfolgt eine automatische Anonymisierung.
 
+**WICHTIG**: Das Paket "zip" muss auf dem ausführenden System installiert sein.
+```
+apt-get install zip
+```
 ## Ansicht (web/index.php)
 Die Ansicht kann nach Twitter-Account und Zeitraum erfolgen.
 
@@ -282,3 +290,8 @@ Um die Parteizugehörigkeit schnell und einfach zuordnen zu können.
 
 ## Account-Vorschläge (web/suggestions.php)
 Um über die Suche gefundene Accounts prüfen und entsprechend für die Erfassung freigeben zu können.
+
+
+--- 
+# Links
+https://stackoverflow.com/questions/20216849/mysqldump-with-utf8-can-not-export-the-right-emojis-string

@@ -51,6 +51,7 @@
             // get all suggestions
             $accountSuggestions = $accountRepository->findBySuggestionOrderedBySuggestionForNameAndName();
         ?>
+        <h1>Confirm accounts based on search results of importer</h1>
         <p>Sum: <?php echo count($accountSuggestions) ?></p>
         <hr />
         <table class="list">

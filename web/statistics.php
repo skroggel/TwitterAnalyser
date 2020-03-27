@@ -17,9 +17,9 @@
         </style>
     </head>
     <body>
+        <h1>Some statistics</h1>
         <p>Accounts: <?php echo number_format($accountRepository->countAll(), 0, ',', '.'); ?></p>
         <p>Tweets: <?php echo number_format($tweetRepository->countAll(), 0, ',', '.'); ?></p>
-
     </body>
 
 </html>

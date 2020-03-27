@@ -84,20 +84,28 @@ class TweetRepository extends RepositoryAbstract
      *
      * @param array $hashtags
      * @param string $party
+     * @param int $fromTimestamp
+     * @param int $toTimestamp
      * @param int $averageInteractionTime
      * @param int $limit
      * @return array|null
      * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
      */
-    public function findByHashtagsAndPartyAndAverageInteractionTime (array $hashtags, string $party, int $averageInteractionTime = 14400, int $limit = 100)
+    public function findTimelineTweetsByHashtagsAndPartyAndTimeIntervalAndAverageInteractionTime (array $hashtags = [], string $party = '', int $fromTimestamp = 0, int $toTimestamp = 0, int $averageInteractionTime = 14400, int $limit = 0)
     {
         $findInSet = [];
         $params = [];
 
+        // add party filter
+        $partyFilter = '';
+        if ($party) {
+            $partyFilter = ' AND account.party = ?';
+            $params[] = $party;
+        }
+
         // add hashtag filter
         $hashtagFilter = '';
         if ($hashtags) {
-
             foreach ($hashtags as $hashtag) {
                 if (strlen($hashtag) >= 3 ) {
                     $findInSet[] = 'FIND_IN_SET (?, ' . $this->table . '.hashtags_words_only)';
@@ -105,15 +113,23 @@ class TweetRepository extends RepositoryAbstract
                 }
             }
             if (count($findInSet)) {
-                $hashtagFilter = 'AND (' . implode(' OR ', $findInSet) . ')';
+                $hashtagFilter = ' AND (' . implode(' OR ', $findInSet) . ')';
             }
         }
 
-        // add party filter
-        $partyFilter = '';
-        if ($party) {
-            $partyFilter = 'AND account.party = ?';
-            $params[] = $party;
+        // add time filter
+        $timeFilter = '';
+        if ($fromTimestamp) {
+            $timeFilter = ' AND ' . $this->table  . '.created_at >= ' . intval($fromTimestamp);
+        }
+        if ($toTimestamp) {
+            $timeFilter .= ' AND ' . $this->table  . '.created_at <= ' . intval($toTimestamp);
+        }
+
+        // add limit
+        $limitFilter = '';
+        if ($limit) {
+            $limitFilter = ' LIMIT ' . intval($limit);
         }
 
         $sql = 'SELECT * FROM ' . $this->table . '
@@ -124,16 +140,65 @@ class TweetRepository extends RepositoryAbstract
             WHERE ' . $this->table  . '.type = \'timeline\'
                 AND ' . $this->table  . '.is_reply = 0
                 AND ' . $this->table  . '.exported = 0
+                AND ' . $this->table  . '.deleted = 0
                 AND ' . $this->table  . '.calculation_timestamp > 0
                 AND ' . $this->table  . '.interaction_time > 0
                 AND ' . $this->table  . '.reply_count > 0
                 AND (' . $this->table  . '.interaction_time / ' . $this->table  . '.reply_count) <= ' . intval($averageInteractionTime) . '
-               ' . $hashtagFilter . '
-            ORDER BY reply_count DESC LIMIT ' . intval($limit);
+                ' . $timeFilter . '
+                ' . $hashtagFilter . '
+            ORDER BY reply_count DESC' . $limitFilter;
 
-        $result = $this->_findAll($sql, $params);
+        $result = $this->_findAll($sql, $params, false);
         return $result;
     }
 
+    /**
+     * Find by hashtag and time interval
+     *
+     * @param array $hashtags
+     * @param int $fromTimestamp
+     * @param int $toTimestamp
+     * @param int $averageInteractionTime
+     * @return array|null
+     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     */
+    public function findTimelineTweetsByHashtagAndTimeInterval (string $hashtag, int $fromTimestamp = 0, int $toTimestamp = 0)
+    {
+
+        // add time filter
+        $timeFilter = '';
+        if ($fromTimestamp) {
+            $timeFilter = 'AND created_at >= ' . intval($fromTimestamp);
+        }
+        if ($toTimestamp) {
+            $timeFilter .= ' AND created_at <= ' . intval($toTimestamp);
+        }
+
+        $sql = 'SELECT COUNT(uid) as counter, hashtags_words_only FROM ' . $this->table . '
+            WHERE type = \'timeline\'
+                AND is_reply = 0
+                AND FIND_IN_SET (?, hashtags_words_only)
+                ' . $timeFilter . '
+            GROUP BY hashtags_words_only
+            ORDER BY COUNT(uid) DESC';
+
+        $params = [
+            trim(strtolower($hashtag))
+        ];
+
+        $sth = $this->pdo->prepare($sql);
+        if ($sth->execute($params)) {
+            if ($resultDb = $sth->fetchAll(\PDO::FETCH_ASSOC)) {
+                return $resultDb ;
+            };
+
+            return null;
+
+        } else {
+            throw new RepositoryException($sth->errorInfo()[2]);
+        }
+
+    }
 
 }

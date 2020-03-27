@@ -15,36 +15,13 @@ class Export extends ModelAbstract
     /**
      * @var string
      */
-    protected $md5UserId = '';
+    protected $md5UserName = '';
 
     /**
      * @var string
      */
-    protected $md5UserName = '';
+    protected $party = '';
 
-
-    /**
-     * Gets md5UserId
-     *
-     * @return string
-     */
-    public function getMd5UserId()
-    {
-        return $this->md5UserId;
-    }
-
-
-    /**
-     * Sets md5UserId
-     *
-     * @param string $md5UserId
-     * @return $this
-     */
-    public function setMd5UserId($md5UserId)
-    {
-        $this->md5UserId = $md5UserId;
-        return $this;
-    }
 
     /**
      * Gets md5UserName
@@ -70,4 +47,26 @@ class Export extends ModelAbstract
     }
 
 
+    /**
+     * Gets party
+     *
+     * @return string
+     */
+    public function getParty()
+    {
+        return $this->party;
+    }
+
+
+    /**
+     * Sets party
+     *
+     * @param string $party
+     * @return $this
+     */
+    public function setParty($party)
+    {
+        $this->party = $party;
+        return $this;
+    }
 }

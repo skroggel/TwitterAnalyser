@@ -5,9 +5,6 @@
     require_once(__DIR__ . '/../vendor/autoload.php');
 
     $exportUtility = new \Madj2k\TwitterAnalyser\Utility\TweetExportUtility();
-$tweetRepository = new \Madj2k\TwitterAnalyser\Repository\TweetRepository();
-echo $tweetRepository->findOneByTweetId('1232953003105275904')->getFulltext();
-exit();
 ?>
 <html>
     <head>
@@ -19,26 +16,38 @@ exit();
         <?php
             if (isset($_POST['search'])) {
 
+                $processStart = microtime(true);
+
                 // get all tweets that match the given criteria
-                $tweetCount = $exportUtility->export(
+                $result = $exportUtility->export(
                     $_POST['hashtags'],
                     $_POST['party'],
+                    $_POST['dateFrom'],
+                    $_POST['dateTo'],
                     intval($_POST['averageInteractionTime']),
-                    intval($_POST['limit'])
+                    intval($_POST['limit']),
+                    (isset($_POST['dryRun']) ? 1 : 0)
                 );
 
-                if ($tweetCount) {
-                    echo sprintf('<p class="message">Exported %s conversations.</p>', $tweetCount);
+                $processTime = microtime(true) - $processStart;
+
+                if ($result) {
+                    if (isset($_POST['dryRun'])) {
+                        echo sprintf('<p class="message">The given params will find a maximum of %s conversations to export. Processed in %s seconds.</p>', $result['count'], $processTime);
+                    } else {
+                        echo sprintf('<p class="message">Exported %s conversations. You can download them <a href="%s" target="_blank">here</a>. Processed in %s seconds.</p>', $result['count'], $result['zip'], $processTime);
+                    }
                 } else {
-                    echo sprintf('<p class="message message--error">No conversations found.</p>');
+                    echo sprintf('<p class="message message--error">No conversations found. Processed in %s seconds.</p>', $processTime);
                 }
             }
         ?>
 
+        <h1>Export conversations</h1>
         <form method="post" >
             <fieldset>
                 <legend>Filter</legend>
-                <label for="hashtags">Hashtags (comma-separated list)</label>
+                <label for="hashtags">Hashtags (each hashtag in a new line)</label>
                 <textarea id="hashtags" name="hashtags" rows="4" cols="50"><?php echo (isset($_POST['hashtags']) ? $_POST['hashtags'] : ''); ?></textarea>
 
                 <label for="party">Party:</label>
@@ -57,8 +66,17 @@ exit();
                 <input id="avg-interaction-time" type="text" name="averageInteractionTime" value="<?php echo (isset($_POST['averageInteractionTime']) ? intval($_POST['averageInteractionTime']) : '14400'); ?>"/>
 
                 <label for="limit">Limit:</label>
-                <input id="limit" type="text" name="limit" value="<?php echo (isset($_POST['limit']) ? intval($_POST['limit']) : '100'); ?>"/>
+                <input id="limit" type="text" name="limit" value="<?php echo (isset($_POST['limit']) ? intval($_POST['limit']) : '10'); ?>"/>
 
+                <label for="date-from">From date (format: YYYY-mm-dd):</label>
+                <input id="date-from" type="text" name="dateFrom" value="<?php echo (isset($_POST['dateFrom']) ? $_POST['dateFrom'] : '2019-07-01'); ?>"/>
+
+                <label for="date-to">To date (format: YYYY-mm-dd):</label>
+                <input id="date-to" type="text" name="dateTo" value="<?php echo (isset($_POST['dateTo']) ? $_POST['dateTo'] : '2020-02-28'); ?>"/>
+
+                <label>
+                    <input type="checkbox" name="dryRun" value="1" checked="checked"/>Dry Run
+                </label>
 
                 <button class="save" type="submit" name="search">Search</button>
             </fieldset>

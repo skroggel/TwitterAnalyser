@@ -16,26 +16,35 @@ try {
     try {
 
         if (!file_exists(__DIR__ . '/../calculate.lock')) {
-            touch(__DIR__ . '/../calculate.lock');
+            if (!file_exists(__DIR__ . '/../calculate-finished.lock')) {
 
-            $logUtility->log($logUtility::LOG_INFO, 'Calculating interaction-time and counting replies of timeline tweets.');
-            $limit = (isset($argv[1]) ? $argv[1] : 100);
+                touch(__DIR__ . '/../calculate.lock');
 
-            /** @var \Madj2k\TwitterAnalyser\TweetCalculator $tweetCalculator */
-            $tweetCalculator = new \Madj2k\TwitterAnalyser\TweetCalculator();
-            $tweetCalculator->calculateInteractionTimeAndCountReplies($limit);
+                $limit = (isset($argv[1]) ? $argv[1] : 100);
+                $logUtility->log($logUtility::LOG_INFO, sprintf('Calculating interaction-time and counting replies of timeline tweets with limit %s.', $limit));
 
-            unlink(__DIR__ . '/../calculate.lock');
-            $logUtility->log($logUtility::LOG_INFO, 'Finished calculating.');
+                /** @var \Madj2k\TwitterAnalyser\TweetCalculator $tweetCalculator */
+                $tweetCalculator = new \Madj2k\TwitterAnalyser\TweetCalculator();
+                $count = $tweetCalculator->calculateInteractionTimeAndCountReplies($limit);
+
+                unlink(__DIR__ . '/../calculate.lock');
+                $logUtility->log($logUtility::LOG_INFO, sprintf('Finished calculating for %s tweets.', $count));
+                if ($count < 1) {
+                    touch(__DIR__ . '/../calculate-finished.lock');
+                }
+
+            } else {
+                $logUtility->log($logUtility::LOG_INFO, 'Calculation finished.');
+            }
 
         } else {
             $logUtility->log($logUtility::LOG_WARNING, 'Script is already running.');
         }
 
-
     } catch (\Exception $e) {
         $logUtility->log($logUtility::LOG_ERROR, $e->getMessage());
     }
+
 } catch (\Exception $e) {
     echo $e->getMessage();
 }

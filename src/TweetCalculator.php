@@ -53,7 +53,7 @@ class TweetCalculator
      * Calculate interaction time and reply count tweets
      *
      * @param int $limit
-     * @return void
+     * @return int
      * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
      */
     public function calculateInteractionTimeAndCountReplies (int $limit = 100)
@@ -75,9 +75,14 @@ class TweetCalculator
                 $this->tweetRepository->update($tweet);
                 $this->logUtility->log($this->logUtility::LOG_DEBUG, sprintf('Updated interaction-time and reply-count for timeline tweet %s in database.', $tweet->getUid()));
             }
+
+            return count($tweets);
+
         } else {
             $this->logUtility->log($this->logUtility::LOG_DEBUG, 'No tweets found for calculation of interaction-time and reply-count.');
         }
+
+        return 0;
     }
 
 
