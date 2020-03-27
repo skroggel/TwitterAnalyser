@@ -14,32 +14,6 @@ namespace Madj2k\TwitterAnalyser\Repository;
 class AccountRepository extends RepositoryAbstract
 {
 
-    /**
-     * Find one by uid and time
-     *
-     * @param int $uid
-     * @param int $fromTime
-     * @param int $toTime
-     * @return \Madj2k\TwitterAnalyser\Model\Account|null
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
-
-    public function findOneByUidAndTime (int $uid, int $fromTime = 0, int $toTime = 0)
-    {
-        $timeWhere = '';
-        if ($fromTime) {
-            $timeWhere = 'AND created_at >= ' . intval($fromTime);
-        }
-        if ($toTime ) {
-            $timeWhere = 'AND created_at <= ' . intval($toTime);
-        }
-
-        $sql = 'SELECT * FROM ' . $this->table . ' WHERE is_suggestion = 0 AND is_secondary = 0 AND uid = ? ' . $timeWhere;
-
-        /** @var \Madj2k\TwitterAnalyser\Model\Account $result
-        $result = $this->_findOne($sql, [$uid]);
-        return $result;
-    }
-    */
 
     /**
      * Count all but no suggestions and no secondary accounts
@@ -54,6 +28,44 @@ class AccountRepository extends RepositoryAbstract
 
         $result = $this->_countAll($sql, []);
         return $result;
+    }
+
+
+    /**
+     * Count all by time interval but no suggestions and no secondary accounts
+     *
+     * @param int $fromTimestamp
+     * @param int $toTimestamp
+     * @param bool $onlyPrimary
+     * @return array|null
+     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     */
+    public function countAllByTimeInterval (int $fromTimestamp = 0, int $toTimestamp = 0, $onlyPrimary = false)
+    {
+        // add time filter
+        $timeFilter = '';
+        if ($fromTimestamp) {
+            $timeFilter = ' AND create_timestamp >= ' . intval($fromTimestamp);
+            $timeFilter .= ' AND (
+                resigned_timestamp <= 0 
+                OR resigned_timestamp >= '. intval($fromTimestamp) . '
+            )';
+        }
+        if ($toTimestamp) {
+            $timeFilter .= ' AND create_timestamp <= ' . intval($toTimestamp);
+        }
+
+        // add primary filter
+        $primaryFilter = '';
+        if ($onlyPrimary) {
+            $primaryFilter = ' AND is_secondary = 0';
+        }
+
+        $sql = 'SELECT COUNT(uid) FROM ' . $this->table . ' WHERE is_suggestion = 0 '. $primaryFilter . $timeFilter;
+
+        $result = $this->_countAll($sql);
+        return $result;
+
     }
 
     /**

@@ -87,12 +87,20 @@ class TweetRepository extends RepositoryAbstract
      * @param int $fromTimestamp
      * @param int $toTimestamp
      * @param int $averageInteractionTime
+     * @param int $replyCount
      * @param int $limit
      * @return array|null
      * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
      */
-    public function findTimelineTweetsByHashtagsAndPartyAndTimeIntervalAndAverageInteractionTime (array $hashtags = [], string $party = '', int $fromTimestamp = 0, int $toTimestamp = 0, int $averageInteractionTime = 14400, int $limit = 0)
-    {
+    public function findTimelineTweetsByHashtagsAndPartyAndTimeIntervalAndAverageInteractionTimeAndReplyCount (
+        array $hashtags = [],
+        string $party = '',
+        int $fromTimestamp = 0,
+        int $toTimestamp = 0,
+        int $averageInteractionTime = 14400,
+        int $replyCount = 1,
+        int $limit = 0
+    ) {
         $findInSet = [];
         $params = [];
 
@@ -126,13 +134,21 @@ class TweetRepository extends RepositoryAbstract
             $timeFilter .= ' AND ' . $this->table  . '.created_at <= ' . intval($toTimestamp);
         }
 
+        // add resignment filter
+        if ($timeFilter) {
+            $timeFilter .= ' AND (
+                account.resigned_timestamp <= 0 
+                OR ' . $this->table  . '.created_at <= account.resigned_timestamp
+            )';
+        }
+
         // add limit
         $limitFilter = '';
         if ($limit) {
             $limitFilter = ' LIMIT ' . intval($limit);
         }
 
-        $sql = 'SELECT * FROM ' . $this->table . '
+        $sql = 'SELECT ' . $this->table . '.* FROM ' . $this->table . '
             INNER JOIN account
                 ON ' . $this->table  . '.account = account.uid
                 AND account.exported = 0 
@@ -143,7 +159,7 @@ class TweetRepository extends RepositoryAbstract
                 AND ' . $this->table  . '.deleted = 0
                 AND ' . $this->table  . '.calculation_timestamp > 0
                 AND ' . $this->table  . '.interaction_time > 0
-                AND ' . $this->table  . '.reply_count > 0
+                AND ' . $this->table  . '.reply_count >= ' . intval ($replyCount) . '
                 AND (' . $this->table  . '.interaction_time / ' . $this->table  . '.reply_count) <= ' . intval($averageInteractionTime) . '
                 ' . $timeFilter . '
                 ' . $hashtagFilter . '
@@ -192,12 +208,37 @@ class TweetRepository extends RepositoryAbstract
             if ($resultDb = $sth->fetchAll(\PDO::FETCH_ASSOC)) {
                 return $resultDb ;
             };
-
             return null;
 
         } else {
             throw new RepositoryException($sth->errorInfo()[2]);
         }
+
+    }
+
+    /**
+     * Count all by time interval
+     *
+     * @param int $fromTimestamp
+     * @param int $toTimestamp
+     * @return array|null
+     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     */
+    public function countAllByTimeInterval (int $fromTimestamp = 0, int $toTimestamp = 0)
+    {
+        // add time filter
+        $timeFilter = '';
+        if ($fromTimestamp) {
+            $timeFilter = ' AND created_at >= ' . intval($fromTimestamp);
+        }
+        if ($toTimestamp) {
+            $timeFilter .= ' AND created_at <= ' . intval($toTimestamp);
+        }
+
+        $sql = 'SELECT COUNT(uid) FROM ' . $this->table . ' WHERE 1 = 1 ' . $timeFilter;
+
+        $result = $this->_countAll($sql);
+        return $result;
 
     }
 

@@ -68,21 +68,31 @@ class TweetExportUtility
      * @param string $fromDate
      * @param string $toDate
      * @param int $averageInteractionTime
+     * @param int $replyCount
      * @param int $limit
      * @param bool $dryRun
      * @return array
      * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
      */
-    public function export (string $hashtags = '', string $party = '', string $fromDate = '', string $toDate = '', int $averageInteractionTime = 14400, int $limit = 0, bool $dryRun = false)
-    {
+    public function export (
+        string $hashtags = '',
+        string $party = '',
+        string $fromDate = '',
+        string $toDate = '',
+        int $averageInteractionTime = 14400,
+        int $replyCount = 1,
+        int $limit = 0,
+        bool $dryRun = false
+    ) {
 
         // get all tweets that match the given criteria
-        $tweetList = $this->tweetRepository->findTimelineTweetsByHashtagsAndPartyAndTimeIntervalAndAverageInteractionTime(
+        $tweetList = $this->tweetRepository->findTimelineTweetsByHashtagsAndPartyAndTimeIntervalAndAverageInteractionTimeAndReplyCount(
             explode("\n", trim($hashtags)),
             $party,
             strtotime($fromDate),
             strtotime($toDate),
             $averageInteractionTime,
+            $replyCount,
             ($dryRun ? 0 : $limit)
         );
 
@@ -103,28 +113,50 @@ class TweetExportUtility
 
                 // hashtag list
                 file_put_contents(
-                    $filePath . '/hashtags.txt',
+                    $filePath . '/_hashtags.txt',
                     $hashTagList
                 );
 
+                // set timezone to UTC
+                $timeZone = date_default_timezone_get();
+                date_default_timezone_set('UTC');
+
+                /** @var \Madj2k\TwitterAnalyser\Model\Tweet $tweet **/
+                $statistics = '';
                 foreach ($tweetList as $key => $tweet) {
+
+                    $avgInteractionTime = round($tweet->getInteractionTime() / $tweet->getReplyCount());
+                    $statistics .= '========================================' . "\n" .
+                        'Statistics for export number ' . ($key + 1) . "\n" .
+                        '========================================' . "\n" .
+                        'replyCount: ' . $tweet->getReplyCount() . "\n" .
+                        'avgInteractionTime: ' . date('H:i:s', $avgInteractionTime) . ' (' . $avgInteractionTime . ' sec)' . "\n\n";
 
                     file_put_contents(
                         $filePath . '/' . ($key + 1) . '.txt',
                         $this->tweetExportView->render($tweet)
                     );
                 }
+                // reset timezone
+                date_default_timezone_set($timeZone);
+
+                // statistics
+                file_put_contents(
+                    $filePath . '/_statistics.txt',
+                    $statistics
+                );
+
                 exec($zipCommand);
 
                 return [
                     'count' => count($tweetList),
-                    'zip'   => 'export/' . $folderName . '.zip'
+                    'zip'   => 'export/' . $folderName . '.zip',
                 ];
 
             }
         } else {
             return [
-                'count' => count($tweetList)
+                'count' => count($tweetList),
             ];
         }
 

@@ -18,26 +18,26 @@
                 $allAccounts = $accountRepository->findAll();
             ?>
             <p>Sum: <?php echo count($allAccounts) ?></p>
-            <label><span>Account:</span>
-                <select name="account">
-                    <option value="">---</option>
-                    <?php
-                        /** @var \Madj2k\TwitterAnalyser\Model\Account $account */
-                        foreach ($allAccounts as $account) {
-                            echo '<option ' . (intval ($account->getUid()) == intval($_POST['account']) ? 'selected="selected"' : '' ) . 'value="' . intval($account->getUid()) . '">' . $account->getName()  . ' (@' . $account->getUserName() . ')</option>';
-                        }
-                    ?>
-                </select>
+            <label for="account">Account:</label>
+            <select id="account" name="account">
+                <option value="">---</option>
+                <?php
+                    /** @var \Madj2k\TwitterAnalyser\Model\Account $account */
+                    foreach ($allAccounts as $account) {
+                        echo '<option ' . (intval ($account->getUid()) == intval($_POST['account']) ? 'selected="selected"' : '' ) . 'value="' . intval($account->getUid()) . '">' . $account->getName()  . ' (@' . $account->getUserName() . ')</option>';
+                    }
+                ?>
+            </select>
+
+            <label>
+                <label for="date-from">From date (format: YYYY-mm-dd):</label>
+                <input id="date-from" name="fromTime" value="<?php echo (isset($_POST['fromTime']) ? $_POST['fromTime'] : date("Y-m-d", strtotime("first day of previous month"))) ?>">
             </label>
             <label>
-                <span>Von:</span>
-                <input name="fromTime" value="<?php echo (isset($_POST['fromTime']) ? preg_replace('#[^0-9/]+#', '', $_POST['fromTime']) : date("m/d/y", strtotime("first day of previous month"))) ?>">
+                <label for="date-to">To date (format: YYYY-mm-dd):</label>
+                <input id=date-to" name="toTime" value="<?php echo (isset($_POST['toTime']) ? $_POST['toTime'] : date("Y-m-d")) ?>">
             </label>
-            <label>
-                <span>Bis:</span>
-                <input name="toTime" value="<?php echo (isset($_POST['toTime']) ? preg_replace('#[^0-9/]+#', '', $_POST['toTime']) : date("m/d/y")) ?>">
-            </label>
-            <button type="submit">OK</button>
+            <button type="submit" class="save">OK</button>
         </form>
         <hr>
         <?php
