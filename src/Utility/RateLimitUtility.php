@@ -64,7 +64,7 @@ class RateLimitUtility
      * @param string $category
      * @param string $method
      * @return int|false
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      */
     public function getRateLimitForMethod($category, $method)
     {
@@ -134,7 +134,7 @@ class RateLimitUtility
      * @param string $method
      * @param int $resultCount
      * @return int|false
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      */
     public function setRateLimitForMethod($category, $method, $resultCount)
     {

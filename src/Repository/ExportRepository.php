@@ -11,7 +11,7 @@ namespace Madj2k\TwitterAnalyser\Repository;
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
 
-class ExportRepository extends RepositoryAbstract
+class ExportRepository extends \Madj2k\SpencerBrown\Repository\RepositoryAbstract
 {
 
 

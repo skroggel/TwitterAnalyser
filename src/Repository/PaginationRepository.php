@@ -11,7 +11,7 @@ namespace Madj2k\TwitterAnalyser\Repository;
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
 
-class PaginationRepository extends RepositoryAbstract
+class PaginationRepository extends \Madj2k\SpencerBrown\Repository\RepositoryAbstract
 {
 
     /**
@@ -20,7 +20,7 @@ class PaginationRepository extends RepositoryAbstract
      * @param \Madj2k\TwitterAnalyser\Model\Account $account
      * @param string $type
      * @return \Madj2k\TwitterAnalyser\Model\Pagination|null
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      */
     public function findOneByAccountAndType (\Madj2k\TwitterAnalyser\Model\Account $account, string $type)
     {

@@ -40,7 +40,7 @@ class AccountImportUtility
     /**
      * Constructor
      *
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      * @throws \ReflectionException
      */
     public function __construct()
@@ -62,7 +62,7 @@ class AccountImportUtility
      * @param \Madj2k\TwitterAnalyser\Model\Url $url
      * @param string $userName
      * @return bool
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      */
     public function importPrimary (\Madj2k\TwitterAnalyser\Model\Url $url, $userName)
     {
@@ -107,7 +107,7 @@ class AccountImportUtility
      * @param \stdClass $foundAccount
      * @param string $name
      * @return bool
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      */
     public function importSecondary (\Madj2k\TwitterAnalyser\Model\Url $url, \stdClass $foundAccount, $name)
     {

@@ -11,7 +11,7 @@ namespace Madj2k\TwitterAnalyser\Repository;
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
 
-class RateLimitRepository extends RepositoryAbstract
+class RateLimitRepository extends \Madj2k\SpencerBrown\Repository\RepositoryAbstract
 {
 
 
@@ -21,7 +21,7 @@ class RateLimitRepository extends RepositoryAbstract
      * @param string $category
      * @param string $method
      * @return \Madj2k\TwitterAnalyser\Model\RateLimit|null
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      */
     public function findOneByCategoryAndMethod (string $category, string $method)
     {

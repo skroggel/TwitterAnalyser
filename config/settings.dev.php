@@ -3,9 +3,9 @@
 $SETTINGS = [
     'db' => [
         'host' => 'localhost',
-        'database' => 'backlog',
-        'username' => 'backlog',
-        'password' => 'rkw'
+        'database' => 'test',
+        'username' => 'test',
+        'password' => 'test'
     ],
     'twitter' => [
         'oauth_access_token' => '',
@@ -16,7 +16,7 @@ $SETTINGS = [
     'report' => [
         'log_level' => 1,
         'max_time' => 86400,
-        'email' => 'admin@madj2k.de'
+        'email' => 'developer@steffenkroggel.de'
     ],
     'log_level' => 1,
     'max_fetch' => 10

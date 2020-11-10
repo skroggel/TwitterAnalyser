@@ -32,7 +32,7 @@ class TweetCalculator
     /**
      * Constructor
      *
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      * @throws \ReflectionException
      */
     public function __construct()
@@ -54,7 +54,7 @@ class TweetCalculator
      *
      * @param int $limit
      * @return int
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      */
     public function calculateInteractionTimeAndCountReplies (int $limit = 100)
     {
@@ -93,7 +93,7 @@ class TweetCalculator
      * @param int $interactionTime
      * @param int  $replyCount
      * @return void
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      */
     protected function calculateInteractionTimeAndCountRepliesSub (\Madj2k\TwitterAnalyser\Model\Tweet $tweet, int &$interactionTime, int &$replyCount)
     {

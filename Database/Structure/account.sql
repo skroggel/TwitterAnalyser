@@ -21,17 +21,17 @@ CREATE TABLE IF NOT EXISTS `account` (
   `statuses_count` int(11) NOT NULL DEFAULT '0',
 
   `party` varchar(255) NOT NULL,
-  `resigned_timestamp` int(11) NOT NULL DEFAULT '0'
+  `resigned_timestamp` int(11) NOT NULL DEFAULT '0',
   `fetch_timeline_timestamp` int(11) NOT NULL DEFAULT '0',
   `fetch_addressed_timestamp` int(11) NOT NULL DEFAULT '0',
   `deleted` tinyint(1) NOT NULL DEFAULT '0',
   `exported` tinyint(1) NOT NULL DEFAULT '0',
 
-  ADD PRIMARY KEY (`uid`),
-  ADD KEY `fetch_timeline_timestamp` (`fetch_timeline_timestamp`),
-  ADD KEY `fetch_addressed_timestamp` (`fetch_addressed_timestamp`),
-  ADD KEY `created_at` (`created_at`),
-  ADD KEY `party` (`party`),
-  ADD KEY `resigned_timestamp` (`resigned_timestamp`)
+  PRIMARY KEY (`uid`),
+  KEY `fetch_timeline_timestamp` (`fetch_timeline_timestamp`),
+  KEY `fetch_addressed_timestamp` (`fetch_addressed_timestamp`),
+  KEY `created_at` (`created_at`),
+  KEY `party` (`party`),
+  KEY `resigned_timestamp` (`resigned_timestamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

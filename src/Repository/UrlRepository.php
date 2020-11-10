@@ -11,7 +11,7 @@ namespace Madj2k\TwitterAnalyser\Repository;
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
 
-class UrlRepository extends RepositoryAbstract
+class UrlRepository extends \Madj2k\SpencerBrown\Repository\RepositoryAbstract
 {
 
     /**
@@ -20,7 +20,7 @@ class UrlRepository extends RepositoryAbstract
      * @param int $processed
      * @param int $limit
      * @return array|null
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      */
     public function findByProcessedSortedByCreateTimestamp($processed = 0, $limit = 10)
     {
@@ -38,7 +38,7 @@ class UrlRepository extends RepositoryAbstract
      * @param string $url
      * @param int $processed
      * @return \Madj2k\TwitterAnalyser\Model\Url|null
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      */
     public function findOneByUrlAndProcessed(string $url, $processed = 0)
     {

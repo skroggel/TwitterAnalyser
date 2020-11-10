@@ -31,7 +31,7 @@ class HashtagUtility
     /**
      * Constructor
      *
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      * @throws \ReflectionException
      */
     public function __construct()
@@ -55,7 +55,7 @@ class HashtagUtility
      * @param string $fromDate
      * @param string $toDate
      * @return array
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      */
     public function analyse (string $hashtag = '', string $fromDate = '', string $toDate = '')
     {

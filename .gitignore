@@ -28,5 +28,4 @@ bower_components
 /config/settings.php
 /dev/*.sql
 /dev/*.gz
-/dev/fixer.php
 
