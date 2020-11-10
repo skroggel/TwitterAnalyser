@@ -1,33 +1,38 @@
 {
-    "name": "madj2k/twitter-analyser",
-    "description": "Analyser for Twitter conversations",
-    "license": "GPL-2.0+",
-    "require": {
-        "php": "~7.2",
-        "ext-curl": "*",
-        "ext-pdo": "*",
-        "ext-json": "*",
-        "j7mbo/twitter-api-php" : "*"
-    },
-    "require-dev": {
+  "name": "madj2k/twitter-analyser",
+  "description": "Analyser for Twitter conversations",
+  "license": "GPL-2.0+",
+  "require": {
+    "php": "~7.2",
+    "ext-curl": "*",
+    "ext-pdo": "*",
+    "ext-json": "*",
+    "j7mbo/twitter-api-php" : "*",
+    "madj2k/spencer-brown": "~1.0.0"
+  },
+  "require-dev": {
 
-    },
-    "scripts": {
+  },
+  "scripts": {
 
-    },
-    "extra": {
+  },
+  "extra": {
 
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "config": {
+    "platform": {
+      "php": "7.2"
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
-    "config": {
-        "platform": {
-            "php": "7.2"
-        }
-    },
-    "autoload": {
-        "psr-4": {
-            "Madj2k\\TwitterAnalyser\\": "src"
-        }
+    "preferred-install": {
+      "madj2k/*": "source",
+      "*": "dist"
     }
+  },
+  "autoload": {
+    "psr-4": {
+      "Madj2k\\TwitterAnalyser\\": "src"
+    }
+  }
 }

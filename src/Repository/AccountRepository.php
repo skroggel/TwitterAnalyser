@@ -11,7 +11,7 @@ namespace Madj2k\TwitterAnalyser\Repository;
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
 
-class AccountRepository extends RepositoryAbstract
+class AccountRepository extends \Madj2k\SpencerBrown\Repository\RepositoryAbstract
 {
 
 
@@ -19,7 +19,7 @@ class AccountRepository extends RepositoryAbstract
      * Count all but no suggestions and no secondary accounts
      *
      * @return array|null
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      */
     public function countAll ()
     {
@@ -38,7 +38,7 @@ class AccountRepository extends RepositoryAbstract
      * @param int $toTimestamp
      * @param bool $onlyPrimary
      * @return array|null
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      */
     public function countAllByTimeInterval (int $fromTimestamp = 0, int $toTimestamp = 0, $onlyPrimary = false)
     {
@@ -72,7 +72,7 @@ class AccountRepository extends RepositoryAbstract
      * Find all but no suggestions and no secondary accounts
      *
      * @return array|null
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      */
     public function findAll ()
     {
@@ -89,7 +89,7 @@ class AccountRepository extends RepositoryAbstract
      *
      * @param int $limit
      * @return array|null
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      */
     public function findAllSortedByLastFetchTimeline (int $limit)
     {
@@ -106,7 +106,7 @@ class AccountRepository extends RepositoryAbstract
      *
      * @param int $limit
      * @return array|null
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      */
     public function findAllSortedByLastFetchAddressed (int $limit)
     {
@@ -122,7 +122,7 @@ class AccountRepository extends RepositoryAbstract
      *
      * @param bool $suggestion
      * @return array|null
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      */
     public function findBySuggestionOrderedBySuggestionForNameAndName (bool $suggestion = true)
     {

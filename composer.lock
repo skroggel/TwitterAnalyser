@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "119fd55ac4ddb57a2ca39af87c98ffc1",
+    "content-hash": "62dae472252a6462efff09a18b0b5fb2",
     "packages": [
         {
             "name": "j7mbo/twitter-api-php",
@@ -54,7 +54,46 @@
                 "php",
                 "twitter"
             ],
+            "support": {
+                "issues": "https://github.com/J7mbo/twitter-api-php/issues",
+                "source": "https://github.com/J7mbo/twitter-api-php/tree/master"
+            },
             "time": "2017-05-08T12:10:56+00:00"
+        },
+        {
+            "name": "madj2k/spencer-brown",
+            "version": "v1.0.2-stable",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/skroggel/spencer-brown.git",
+                "reference": "980f8bec7b385fd64f6f10663c5d3452a2de6bfb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/skroggel/spencer-brown/zipball/980f8bec7b385fd64f6f10663c5d3452a2de6bfb",
+                "reference": "980f8bec7b385fd64f6f10663c5d3452a2de6bfb",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pdo": "*",
+                "php": "~7.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Madj2k\\SpencerBrown\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "description": "Minimalistic framework for plain PHP-projects",
+            "support": {
+                "issues": "https://github.com/skroggel/spencer-brown/issues",
+                "source": "https://github.com/skroggel/spencer-brown/tree/v1.0.2-stable"
+            },
+            "time": "2020-11-10T09:19:48+00:00"
         }
     ],
     "packages-dev": [],
@@ -65,10 +104,13 @@
     "prefer-lowest": false,
     "platform": {
         "php": "~7.2",
-        "ext-curl": "*"
+        "ext-curl": "*",
+        "ext-pdo": "*",
+        "ext-json": "*"
     },
     "platform-dev": [],
     "platform-overrides": {
         "php": "7.2"
-    }
+    },
+    "plugin-api-version": "2.0.0"
 }

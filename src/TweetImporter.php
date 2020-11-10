@@ -53,7 +53,7 @@ class TweetImporter
     /**
      * Constructor
      *
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      * @throws \ReflectionException
      */
     public function __construct()
@@ -80,7 +80,7 @@ class TweetImporter
      * Get timeline tweets of user
      *
      * @return void
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      */
     public function fetchTweets()
     {
@@ -144,7 +144,7 @@ class TweetImporter
      *
      * @param \Madj2k\TwitterAnalyser\Model\Account $account
      * @return bool
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      */
     public function fetchTweetsOfAccount(\Madj2k\TwitterAnalyser\Model\Account $account)
     {
@@ -203,7 +203,7 @@ class TweetImporter
      *
      * @param \Madj2k\TwitterAnalyser\Model\Account $account
      * @return bool
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      */
     public function fetchTweetsAddressedToAccount(\Madj2k\TwitterAnalyser\Model\Account $account)
     {

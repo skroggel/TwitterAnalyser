@@ -27,7 +27,8 @@
                     intval($_POST['averageInteractionTime']),
                     intval($_POST['minReplyCount']),
                     intval($_POST['limit']),
-                    (isset($_POST['dryRun']) ? 1 : 0)
+                    (isset($_POST['dryRun']) ? 1 : 0),
+                    $_POST['type']
                 );
 
                 $processTime = microtime(true) - $processStart;
@@ -77,6 +78,12 @@
 
                 <label for="date-to">To date (format: YYYY-mm-dd):</label>
                 <input id="date-to" type="text" name="dateTo" value="<?php echo (isset($_POST['dateTo']) ? $_POST['dateTo'] : '2020-02-29'); ?>"/>
+
+                <label for="export-type">Export Type:</label>
+                <select id="export-type" name="type">
+                    <option value="text" <?php if (isset($_POST['type']) && $_POST['type'] == 'text') { echo 'selected="selected"'; }?>>Text</option>
+                    <option value="structured" <?php if (isset($_POST['type']) && $_POST['type'] == 'structured') { echo 'selected="selected"'; }?>>Structured</option>
+                </select>
 
                 <label>
                     <input type="checkbox" name="dryRun" value="1" checked="checked"/>Dry Run

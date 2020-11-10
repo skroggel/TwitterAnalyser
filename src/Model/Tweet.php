@@ -9,7 +9,7 @@ namespace Madj2k\TwitterAnalyser\Model;
  * @package Madj2k_TwitterAnalyser
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class Tweet extends ModelAbstract
+class Tweet extends \Madj2k\SpencerBrown\Model\ModelAbstract
 {
 
     /**

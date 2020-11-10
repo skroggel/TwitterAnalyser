@@ -5,7 +5,7 @@
     require_once(__DIR__ . '/../vendor/autoload.php');
 
     $accountRepository = new \Madj2k\TwitterAnalyser\Repository\AccountRepository();
-    $tweetWebView = new \Madj2k\TwitterAnalyser\View\TweetWebView();
+    $tweetWebView = new \Madj2k\TwitterAnalyser\View\Tweet\WebView();
 ?>
 <html>
     <head>
@@ -17,30 +17,35 @@
             <?php
                 $allAccounts = $accountRepository->findAll();
             ?>
-            <p>Sum: <?php echo count($allAccounts) ?></p>
+            <p>Sum: <?php echo is_array($allAccounts) ? count($allAccounts) : '0' ?></p>
             <label for="account">Account:</label>
             <select id="account" name="account">
                 <option value="">---</option>
                 <?php
-                    /** @var \Madj2k\TwitterAnalyser\Model\Account $account */
+                /** @var \Madj2k\TwitterAnalyser\Model\Account $account */
+                if (is_array($allAccounts)) {
                     foreach ($allAccounts as $account) {
-                        echo '<option ' . (intval ($account->getUid()) == intval($_POST['account']) ? 'selected="selected"' : '' ) . 'value="' . intval($account->getUid()) . '">' . $account->getName()  . ' (@' . $account->getUserName() . ')</option>';
+                        echo '<option ' . (intval($account->getUid()) == intval($_POST['account']) ? 'selected="selected"' : '') . 'value="' . intval($account->getUid()) . '">' . $account->getName() . ' (@' . $account->getUserName() . ')</option>';
                     }
+                }
                 ?>
             </select>
 
             <label>
                 <label for="date-from">From date (format: YYYY-mm-dd):</label>
-                <input id="date-from" name="fromTime" value="<?php echo (isset($_POST['fromTime']) ? $_POST['fromTime'] : date("Y-m-d", strtotime("first day of previous month"))) ?>">
+                <input id="date-from" name="fromTime"
+                    value="<?php echo(isset($_POST['fromTime']) ? $_POST['fromTime'] : date("Y-m-d", strtotime("first day of previous month"))) ?>">
             </label>
             <label>
                 <label for="date-to">To date (format: YYYY-mm-dd):</label>
-                <input id=date-to" name="toTime" value="<?php echo (isset($_POST['toTime']) ? $_POST['toTime'] : date("Y-m-d")) ?>">
+                <input id=date-to" name="toTime"
+                    value="<?php echo(isset($_POST['toTime']) ? $_POST['toTime'] : date("Y-m-d")) ?>">
             </label>
             <button type="submit" class="save">OK</button>
         </form>
         <hr>
         <?php
+           // }
             if (
                 (isset($_POST['account']))
                  && ($_POST['account'] > 0)

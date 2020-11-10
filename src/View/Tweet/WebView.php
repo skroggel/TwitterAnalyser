@@ -1,15 +1,15 @@
 <?php
-namespace Madj2k\TwitterAnalyser\View;
+namespace Madj2k\TwitterAnalyser\View\Tweet;
 
 /**
- * TweetWebView
+ * WebView
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright Steffen Kroggel 2019
  * @package Madj2k_TwitterAnalyser
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class TweetWebView
+class WebView
 {
 
 
@@ -50,7 +50,7 @@ class TweetWebView
      * @param int $fromTime
      * @param int $toTime
      * @return string
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      */
     public function render (\Madj2k\TwitterAnalyser\Model\Account $account, int $fromTime = 0, int $toTime = 0)
     {
@@ -76,7 +76,7 @@ class TweetWebView
      *
      * @param \Madj2k\TwitterAnalyser\Model\Tweet $tweet
      * @return string
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      */
     protected function renderSub (\Madj2k\TwitterAnalyser\Model\Tweet $tweet)
     {

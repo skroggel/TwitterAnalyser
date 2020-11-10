@@ -45,3 +45,6 @@ CREATE TABLE IF NOT EXISTS `tweet` (
 
 ALTER TABLE `tweet` ADD FULLTEXT(`hashtags_words_only`);
 
+
+
+

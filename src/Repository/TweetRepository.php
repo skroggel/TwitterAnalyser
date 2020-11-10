@@ -11,7 +11,7 @@ namespace Madj2k\TwitterAnalyser\Repository;
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
 
-class TweetRepository extends RepositoryAbstract
+class TweetRepository extends \Madj2k\SpencerBrown\Repository\RepositoryAbstract
 {
 
 
@@ -22,7 +22,7 @@ class TweetRepository extends RepositoryAbstract
      * @param int $fromTime
      * @param int $toTime
      * @return array|null
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      */
     public function findTimelineTweetsByAccountAndTimeOrderedByCreateAt(\Madj2k\TwitterAnalyser\Model\Account $account, int $fromTime = 0, int $toTime = 0)
     {
@@ -48,7 +48,7 @@ class TweetRepository extends RepositoryAbstract
      *
      * @param int $limit
      * @return array|null
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      */
     public function findTimelineTweetsByCalculationTimestamp (int $limit = 100)
     {
@@ -66,7 +66,7 @@ class TweetRepository extends RepositoryAbstract
      *
      * @param string $tweetId
      * @return array|null
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      */
     public function findByInReplyToTweetIdOrderedByCreateAt($tweetId)
     {
@@ -90,7 +90,7 @@ class TweetRepository extends RepositoryAbstract
      * @param int $replyCount
      * @param int $limit
      * @return array|null
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      */
     public function findTimelineTweetsByHashtagsAndPartyAndTimeIntervalAndAverageInteractionTimeAndReplyCount (
         array $hashtags = [],
@@ -177,7 +177,7 @@ class TweetRepository extends RepositoryAbstract
      * @param int $toTimestamp
      * @param int $averageInteractionTime
      * @return array|null
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      */
     public function findTimelineTweetsByHashtagAndTimeInterval (string $hashtag, int $fromTimestamp = 0, int $toTimestamp = 0)
     {
@@ -222,7 +222,7 @@ class TweetRepository extends RepositoryAbstract
      * @param int $fromTimestamp
      * @param int $toTimestamp
      * @return array|null
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      */
     public function countAllByTimeInterval (int $fromTimestamp = 0, int $toTimestamp = 0)
     {

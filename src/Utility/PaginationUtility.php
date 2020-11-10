@@ -28,7 +28,7 @@ class PaginationUtility
     /**
      * Constructor
      *
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      * @throws \ReflectionException
      */
     public function __construct()
@@ -49,7 +49,7 @@ class PaginationUtility
      * @param string $type
      * @param array $constraints
      * @return \Madj2k\TwitterAnalyser\Model\Pagination $pagination
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      * @see https://developer.twitter.com/en/docs/tweets/timelines/guides/working-with-timelines.html
      */
     public function getPagination (\Madj2k\TwitterAnalyser\Model\Account $account, string $type, array &$constraints)
@@ -82,7 +82,7 @@ class PaginationUtility
      * @param \Madj2k\TwitterAnalyser\Model\Pagination $pagination
      * @param array $jsonResult
      * @return void
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      * @see https://developer.twitter.com/en/docs/tweets/timelines/guides/working-with-timelines.html
      */
     public function setPagination (\Madj2k\TwitterAnalyser\Model\Pagination $pagination, array $jsonResult)

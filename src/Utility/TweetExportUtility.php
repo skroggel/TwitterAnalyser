@@ -18,7 +18,7 @@ class TweetExportUtility
     protected $tweetRepository;
 
     /**
-     * @var \Madj2k\TwitterAnalyser\View\TweetExportView
+     * @var \Madj2k\TwitterAnalyser\View\Tweet\Export\ExportViewInterface
      */
     protected $tweetExportView;
 
@@ -36,7 +36,7 @@ class TweetExportUtility
     /**
      * Constructor
      *
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      * @throws \ReflectionException
      */
     public function __construct()
@@ -47,7 +47,6 @@ class TweetExportUtility
 
         // set defaults
         $this->tweetRepository = new \Madj2k\TwitterAnalyser\Repository\TweetRepository();
-        $this->tweetExportView = new \Madj2k\TwitterAnalyser\View\TweetExportView();
         $this->logUtility = new  \Madj2k\TwitterAnalyser\Utility\LogUtility();
 
         if (! isset($this->settings['exportPath'])) {
@@ -71,8 +70,10 @@ class TweetExportUtility
      * @param int $replyCount
      * @param int $limit
      * @param bool $dryRun
+     * @param string $type
      * @return array
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
+     * @throws \ReflectionException
      */
     public function export (
         string $hashtags = '',
@@ -82,7 +83,8 @@ class TweetExportUtility
         int $averageInteractionTime = 14400,
         int $replyCount = 1,
         int $limit = 0,
-        bool $dryRun = false
+        bool $dryRun = false,
+        string $type = 'txt'
     ) {
 
         // get all tweets that match the given criteria
@@ -105,11 +107,18 @@ class TweetExportUtility
             $zipFile = $this->settings['exportPath'] . '/' . $folderName . '.zip';
             $zipCommand = 'zip -j ' . $zipFile . ' ' . $filePath . '/*';
 
+
             if (!file_exists($filePath)) {
                 mkdir($filePath);
             }
 
             if ($tweetList) {
+
+                $view = new \Madj2k\TwitterAnalyser\View\Tweet\Export\TextExportView($filePath);
+                $exportClass = '\\Madj2k\\TwitterAnalyser\\View\\Tweet\\Export\\' . ucfirst(strtolower($type)) . 'ExportView';
+                if (class_exists($exportClass)) {
+                    $view = new $exportClass($filePath);
+                }
 
                 // hashtag list
                 file_put_contents(
@@ -121,30 +130,11 @@ class TweetExportUtility
                 $timeZone = date_default_timezone_get();
                 date_default_timezone_set('UTC');
 
-                /** @var \Madj2k\TwitterAnalyser\Model\Tweet $tweet **/
-                $statistics = '';
-                foreach ($tweetList as $key => $tweet) {
+                // do the export
+                $view->render($tweetList);
 
-                    $avgInteractionTime = round($tweet->getInteractionTime() / $tweet->getReplyCount());
-                    $statistics .= '========================================' . "\n" .
-                        'Statistics for export number ' . ($key + 1) . "\n" .
-                        '========================================' . "\n" .
-                        'replyCount: ' . $tweet->getReplyCount() . "\n" .
-                        'avgInteractionTime: ' . date('H:i:s', $avgInteractionTime) . ' (' . $avgInteractionTime . ' sec)' . "\n\n";
-
-                    file_put_contents(
-                        $filePath . '/' . ($key + 1) . '.txt',
-                        $this->tweetExportView->render($tweet)
-                    );
-                }
                 // reset timezone
                 date_default_timezone_set($timeZone);
-
-                // statistics
-                file_put_contents(
-                    $filePath . '/_statistics.txt',
-                    $statistics
-                );
 
                 exec($zipCommand);
 

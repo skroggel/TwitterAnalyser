@@ -53,7 +53,7 @@ class AccountImporter
     /**
      * Constructor
      *
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      * @throws \ReflectionException
      */
     public function __construct()
@@ -83,7 +83,7 @@ class AccountImporter
      * @param string $baseUrl
      * @param string $regExpDetailLinks
      * @return int|false
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      */
     public function fetchDetailLinksFromWebList(
         $url = 'https://www.bundestag.de/ajax/filterlist/de/abgeordnete/525246-525246/h_e3c112579919ef960d06dbb9d0d44b67?limit=9999&view=BTBiographyList',
@@ -133,7 +133,7 @@ class AccountImporter
      * @param string $regExpNames
      * @param int $limit
      * @return int|false
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      */
     public function fetchAccountNamesFromDetailLinks ($regExpTwitterLinks = '#<a[^>]+href="http[s]?://[^\.]*\.?twitter\.com/(@?(\w){1,15})[^"]*"[^>]+>#', $regExpNames = '#<div class="[^"]+ bt-biografie-name">[^<]*<h3>([^<]+)</h3>#', $limit = 10)
     {

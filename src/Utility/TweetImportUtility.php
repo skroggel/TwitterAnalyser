@@ -40,7 +40,7 @@ class TweetImportUtility
     /**
      * Constructor
      *
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      * @throws \ReflectionException
      */
     public function __construct()
@@ -65,7 +65,7 @@ class TweetImportUtility
      * @param string $type
      * @param \stdClass $object
      * @return bool
-     * @throws \Madj2k\TwitterAnalyser\Repository\RepositoryException
+     * @throws \Madj2k\SpencerBrown\Repository\RepositoryException
      */
     public function import (\Madj2k\TwitterAnalyser\Model\Account $account, string $type, \stdClass $object)
     {
